@@ -16,16 +16,19 @@ services:
         fi
         php -v | grep '^PHP';
         if [ ${TYPO3_VERSION} -eq 11 ]; then
-              composer rem --dev "sbuerk/typo3-cmscomposerinstallers-testingframework-bridge" --no-update
-              composer req --dev --no-update typo3/cms-composer-installers:^3.0 typo3/cms-backend:^11.5 \\
-                  typo3/cms-recordlist:^11.5 typo3/cms-frontend:^11.5 typo3/cms-extbase:^11.5 \\
-                  typo3/cms-fluid:^11.5 typo3/cms-install:^11.5 phpunit/phpunit:^9.6.4
+              composer req --dev --no-update \\
+                  typo3/cms-composer-installers:^3.0 \\
+                  typo3/cms-backend:^11.5 \\
+                  typo3/cms-recordlist:^11.5 \\
+                  typo3/cms-frontend:^11.5 \\
+                  typo3/cms-extbase:^11.5 \\
+                  typo3/cms-fluid:^11.5 \\
+                  typo3/cms-install:^11.5
               composer req typo3/cms-core:^11.5 --no-update
         fi
         if [ ${TYPO3_VERSION} -eq 12 ]; then
             composer req --dev --no-update \\
                "typo3/cms-composer-installers:^5.0" \\
-               "sbuerk/typo3-cmscomposerinstallers-testingframework-bridge":^0.0.1 \\
                 typo3/cms-backend:^12 \\
                 typo3/cms-frontend:^12 \\
                 typo3/cms-extbase:^12 \\
@@ -58,7 +61,7 @@ services:
             .Build/vendor/bin/php-cs-fixer fix \\
               -v \\
               ${CGLCHECK_DRY_RUN} \\
-              --config=.php-cs-fixer.dist.php  \\
+              --config=Build/php-cs-fixer/php-cs-fixer.php  \\
               --using-cache=no .
         else
           XDEBUG_MODE=\"debug,develop\" \\
@@ -68,7 +71,7 @@ services:
           .Build/vendor/bin/php-cs-fixer fix \\
             -v \\
             ${CGLCHECK_DRY_RUN} \\
-            --config=.php-cs-fixer.dist.php  \\
+            --config=Build/php-cs-fixer/php-cs-fixer.php  \\
             --using-cache=no .
         fi
       "
@@ -124,7 +127,7 @@ services:
       - ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:rw,noexec,nosuid,uid=${HOST_UID}
     environment:
       typo3DatabaseDriver: pdo_sqlite
-    working_dir: ${ROOT_DIR}/.Build
+    working_dir: ${ROOT_DIR}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: >
@@ -135,12 +138,12 @@ services:
         php -v | grep '^PHP';
         if [ ${PHP_XDEBUG_ON} -eq 0 ]; then
           export XDEBUG_MODE=\"off\";
-          vendor/bin/phpunit -c ../Tests/FunctionalTests.xml ${EXTRA_TEST_OPTIONS} --exclude-group not-sqlite ${TEST_FILE};
+          .Build/vendor/bin/phpunit -c Build/phpunit/FunctionalTests.xml ${EXTRA_TEST_OPTIONS} --exclude-group not-sqlite ${TEST_FILE};
         else
           export XDEBUG_MODE=\"debug\";
           export XDEBUG_TRIGGER=\"foo\";
           export XDEBUG_CONFIG=\"client_port=${PHP_XDEBUG_PORT} client_host=`route -n | awk '/^0.0.0.0/ { print $$2 }'`\";
-          vendor/bin/phpunit -c ../Tests/FunctionalTests.xml ${EXTRA_TEST_OPTIONS} --exclude-group not-sqlite ${TEST_FILE};
+          .Build/vendor/bin/phpunit -c Build/phpunit/FunctionalTests.xml ${EXTRA_TEST_OPTIONS} --exclude-group not-sqlite ${TEST_FILE};
         fi
       "
 
@@ -173,12 +176,12 @@ services:
         php -v | grep '^PHP'
         if [ ${PHP_XDEBUG_ON} -eq 0 ]; then
           XDEBUG_MODE=\"off\" \
-          .Build/vendor/bin/phpunit -c Build/UnitTests.xml ${EXTRA_TEST_OPTIONS} ${TEST_FILE};
+          .Build/vendor/bin/phpunit -c Build/phpunit/UnitTests.xml ${EXTRA_TEST_OPTIONS} ${TEST_FILE};
         else
           DOCKER_HOST=`route -n | awk '/^0.0.0.0/ { print $$2 }'`
           XDEBUG_MODE=\"debug,develop\" \
           XDEBUG_TRIGGER=\"foo\" \
           XDEBUG_CONFIG=\"client_port=${PHP_XDEBUG_PORT} client_host=$${DOCKER_HOST}\" \
-          .Build/vendor/bin/phpunit -c Build/UnitTests.xml ${EXTRA_TEST_OPTIONS} ${TEST_FILE};
+          .Build/vendor/bin/phpunit -c Build/phpunit/UnitTests.xml ${EXTRA_TEST_OPTIONS} ${TEST_FILE};
         fi
       "

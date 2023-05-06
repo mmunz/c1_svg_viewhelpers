@@ -124,7 +124,7 @@ cd ../testing-docker || exit 1
 # Option defaults
 ROOT_DIR=`readlink -f ${PWD}/../../`
 TEST_SUITE="unit"
-DBMS="mariadb"
+DBMS="sqlite"
 PHP_VERSION="7.4"
 TYPO3_VERSION="11"
 PHP_XDEBUG_ON=0
@@ -146,6 +146,9 @@ while getopts ":s:d:p:t:e:xy:nhuv" OPT; do
             ;;
         d)
             DBMS=${OPTARG}
+            if [[ "${DBMS}" != "sqlite" ]]; then
+                INVALID_OPTIONS+=("d ${OPTARG}")
+            fi
             ;;
         p)
             PHP_VERSION=${OPTARG}
@@ -220,7 +223,8 @@ case ${TEST_SUITE} in
             cp ../../composer.json ../../composer.json.orig
         fi
         docker-compose run composer_update
-        docker-compose run composer_validate
+        # @todo composer_validate is not defined in testing_docker/docker-compose.yml. Disabled for now !
+        #docker-compose run composer_validate
         cp ../../composer.json ../../composer.json.testing
         mv ../../composer.json.orig ../../composer.json
         SUITE_EXIT_CODE=$?

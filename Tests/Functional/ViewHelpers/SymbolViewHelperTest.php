@@ -13,18 +13,16 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * Test case
  */
-class SymbolViewHelperTest extends FunctionalTestCase
+final class SymbolViewHelperTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        '../../Tests/Fixtures/Extensions/c1_svg_viewhelpers_test',
-        '../../../c1_svg_viewhelpers',
+        'typo3conf/ext/c1_svg_viewhelpers/Tests/Fixtures/Extensions/c1_svg_viewhelpers_test',
+        'typo3conf/ext/c1_svg_viewhelpers',
     ];
 
     protected array $defaultArguments = [
-            'id' => 1,
-        ];
-
-    protected $backupGlobals = true;
+        'id' => 1,
+    ];
 
     protected array $configurationToUseInTestInstance = [
         'FE' => [
@@ -88,7 +86,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
         );
     }
 
-    public function renderSymbolDataProvider(): array
+    public static function renderSymbolDataProvider(): array
     {
         return [
             'default' => [
@@ -279,12 +277,10 @@ class SymbolViewHelperTest extends FunctionalTestCase
         }
     }
 
-    protected function fetchFrontendResponse(array $requestArguments): \TYPO3\CMS\Core\Http\Response
+    private function fetchFrontendResponse(array $requestArguments): \TYPO3\CMS\Core\Http\Response
     {
-        $response = $this->executeFrontendSubRequest(
+        return $this->executeFrontendSubRequest(
             (new InternalRequest('https://website.local/'))->withQueryParameters($requestArguments)
         );
-
-        return $response;
     }
 }
