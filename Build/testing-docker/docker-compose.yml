@@ -16,7 +16,6 @@ services:
         fi
         php -v | grep '^PHP';
         if [ ${TYPO3_VERSION} -eq 11 ]; then
-              composer rem --dev "sbuerk/typo3-cmscomposerinstallers-testingframework-bridge" --no-update
               composer req --dev --no-update typo3/cms-composer-installers:^3.0 typo3/cms-backend:^11.5 \\
                   typo3/cms-recordlist:^11.5 typo3/cms-frontend:^11.5 typo3/cms-extbase:^11.5 \\
                   typo3/cms-fluid:^11.5 typo3/cms-install:^11.5 phpunit/phpunit:^9.6.4
@@ -25,7 +24,6 @@ services:
         if [ ${TYPO3_VERSION} -eq 12 ]; then
             composer req --dev --no-update \\
                "typo3/cms-composer-installers:^5.0" \\
-               "sbuerk/typo3-cmscomposerinstallers-testingframework-bridge":^0.0.1 \\
                 typo3/cms-backend:^12 \\
                 typo3/cms-frontend:^12 \\
                 typo3/cms-extbase:^12 \\
