@@ -29,7 +29,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     }
 
     // Initialize the viewhelper
-    public function initialize(array $settings=null): void
+    public function initialize(?array $settings = null): void
     {
         parent::initialize();
         $this->settings = is_array($settings) ? $settings : $this->getTypoScriptSettings();
@@ -74,9 +74,9 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     {
         $presets = $this->settings['svg']['symbol']['presets'];
         if (
-            $this->hasArgument('symbolFile') &&
-            isset($presets[$this->arguments['symbolFile']]) &&
-            array_key_exists('file', $presets[$this->arguments['symbolFile']])
+            $this->hasArgument('symbolFile')
+            && isset($presets[$this->arguments['symbolFile']])
+            && array_key_exists('file', $presets[$this->arguments['symbolFile']])
         ) {
             $this->symbolsFile = (string)$presets[$this->arguments['symbolFile']]['file'];
         } elseif ($this->hasArgument('symbolFile')) {
@@ -124,8 +124,8 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     {
         $presets = $this->settings['svg']['symbol']['presets'];
         if (
-            isset($presets[$this->arguments['symbolFile']]) &&
-            array_key_exists($key, $presets[$this->arguments['symbolFile']])
+            isset($presets[$this->arguments['symbolFile']])
+            && array_key_exists($key, $presets[$this->arguments['symbolFile']])
         ) {
             return $presets[$this->arguments['symbolFile']][$key];
         }

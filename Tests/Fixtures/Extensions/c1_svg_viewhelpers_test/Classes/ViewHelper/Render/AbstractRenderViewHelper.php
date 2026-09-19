@@ -44,8 +44,8 @@ abstract class AbstractRenderViewHelper extends AbstractViewHelper
         $this->registerArgument(
             'onError',
             'string',
-            'Optional error message to display if error occur while rendering. If NULL, lets the error Exception ' .
-            'pass trough (and break rendering)'
+            'Optional error message to display if error occur while rendering. If NULL, lets the error Exception '
+            . 'pass trough (and break rendering)'
         );
         $this->registerArgument(
             'graceful',

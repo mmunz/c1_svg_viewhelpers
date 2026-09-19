@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace C1\SvgViewHelpers\Tests\Functional\ViewHelpers;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
+use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -21,8 +21,8 @@ class SymbolViewHelperTest extends FunctionalTestCase
     ];
 
     protected array $defaultArguments = [
-            'id' => 1,
-        ];
+        'id' => 1,
+    ];
 
     protected $backupGlobals = true;
 
@@ -40,21 +40,9 @@ class SymbolViewHelperTest extends FunctionalTestCase
 
         $this->importCSVDataSet(ORIGINAL_ROOT . '/../../Tests/Fixtures/Database/pages.csv');
 
-        $version = new \TYPO3\CMS\Core\Information\Typo3Version();
-        $majorVersion = $version->getMajorVersion();
-
-        if ($majorVersion < 12) {
-            $siteConfiguration = new SiteConfiguration(
-                $this->instancePath . '/typo3conf/sites/',
-                $this->get('cache.core')
-            );
-        } else {
-            $siteConfiguration = new SiteConfiguration(
-                $this->instancePath . '/typo3conf/sites/',
-                $this->get(EventDispatcherInterface::class),
-                $this->get('cache.core')
-            );
-        }
+        // SiteWriter was extracted from SiteConfiguration in TYPO3 v13.
+        $siteWriterClass = class_exists(SiteWriter::class) ? SiteWriter::class : SiteConfiguration::class;
+        $siteConfiguration = $this->get($siteWriterClass);
 
         $identifier = 'default';
         $configuration = [
@@ -73,14 +61,14 @@ class SymbolViewHelperTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(
             1,
             [
-            'constants' => [
-                'EXT:c1_svg_viewhelpers/Configuration/TypoScript/constants.typoscript',
+                'constants' => [
+                    'EXT:c1_svg_viewhelpers/Configuration/Sets/Default/constants.typoscript',
+                ],
+                'setup' => [
+                    'EXT:c1_svg_viewhelpers/Configuration/Sets/Default/setup.typoscript',
+                    'EXT:c1_svg_viewhelpers_test/Configuration/TypoScript/Basic.typoscript',
+                ],
             ],
-            'setup' => [
-                'EXT:c1_svg_viewhelpers/Configuration/TypoScript/setup.typoscript',
-                'EXT:c1_svg_viewhelpers_test/Configuration/TypoScript/Basic.typoscript',
-            ],
-        ],
         );
         $this->addTypoScriptToTemplateRecord(
             1,
@@ -88,7 +76,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
         );
     }
 
-    public function renderSymbolDataProvider(): array
+    public static function renderSymbolDataProvider(): array
     {
         return [
             'default' => [

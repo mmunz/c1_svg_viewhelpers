@@ -40,7 +40,7 @@ Also used by github actions for test execution.
 
 Usage: $0 [options] [file]
 
-No arguments: Run all unit tests with PHP 7.4
+No arguments: Run all unit tests with PHP 8.2
 
 Options:
     -s <...>
@@ -59,18 +59,17 @@ Options:
         Specifies on which DBMS tests are performed
             - sqlite: use sqlite
 
-    -p <7.4|8.0|8.1|8.2>
+    -p <8.2|8.3|8.4>
         Specifies the PHP minor version to be used
-            - 7.4: (default): use PHP 7.4
-            - 8.0: use PHP 8.0
-            - 8.1: use PHP 8.1
-            - 8.2: use PHP 8.2
+            - 8.2: (default): use PHP 8.2
+            - 8.3: use PHP 8.3
+            - 8.4: use PHP 8.4
 
-    -t <11|12>
+    -t <12|13>
         Only with -s composerUpdate
         Specifies the TYPO3 core major version to be used
-            - 11 (default): use TYPO3 core v11
-            - 12: Use TYPO3 core v12
+            - 12 (default): use TYPO3 core v12
+            - 13: Use TYPO3 core v13
 
     -e "<phpunit options>"
         Only with -s functional|unit
@@ -107,9 +106,9 @@ Options:
 
 EOF
 
-# Test if docker-compose exists, else exit out with error
-if ! type "docker-compose" > /dev/null; then
-  echo "This script relies on docker and docker-compose. Please install" >&2
+# Test if docker compose exists, else exit out with error
+if ! docker compose version > /dev/null 2>&1; then
+  echo "This script relies on docker and the docker compose plugin. Please install" >&2
   exit 1
 fi
 
@@ -125,8 +124,8 @@ cd ../testing-docker || exit 1
 ROOT_DIR=`readlink -f ${PWD}/../../`
 TEST_SUITE="unit"
 DBMS="mariadb"
-PHP_VERSION="7.4"
-TYPO3_VERSION="11"
+PHP_VERSION="8.2"
+TYPO3_VERSION="12"
 PHP_XDEBUG_ON=0
 PHP_XDEBUG_PORT=9003
 EXTRA_TEST_OPTIONS=""
@@ -219,12 +218,11 @@ case ${TEST_SUITE} in
         if [ -f "../../composer.json.testing" ]; then
             cp ../../composer.json ../../composer.json.orig
         fi
-        docker-compose run composer_update
-        docker-compose run composer_validate
+        docker compose run composer_update
         cp ../../composer.json ../../composer.json.testing
         mv ../../composer.json.orig ../../composer.json
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     cgl)
         # Active dry-run for cgl needs not "-n" but specific options
@@ -232,22 +230,22 @@ case ${TEST_SUITE} in
             CGLCHECK_DRY_RUN="--dry-run --diff"
         fi
         setUpDockerComposeDotEnv
-        docker-compose run cgl
+        docker compose run cgl
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     typoScriptLint)
         # Active dry-run for cgl needs not "-n" but specific options
         setUpDockerComposeDotEnv
-        docker-compose run typoScriptLint
+        docker compose run typoScriptLint
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     phpstan)
         setUpDockerComposeDotEnv
-        docker-compose run phpstan
+        docker compose run phpstan
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     functional)
         setUpDockerComposeDotEnv
@@ -258,7 +256,7 @@ case ${TEST_SUITE} in
                 # root if docker creates it. Thank you, docker. We create the path beforehand
                 # to avoid permission issues.
                 mkdir -p ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/
-                docker-compose run functional_sqlite
+                docker compose run functional_sqlite
                 SUITE_EXIT_CODE=$?
                 ;;
             *)
@@ -267,19 +265,19 @@ case ${TEST_SUITE} in
                 echo "${HELP}" >&2
                 exit 1
         esac
-        docker-compose down
+        docker compose down
         ;;
     lint)
         setUpDockerComposeDotEnv
-        docker-compose run lint
+        docker compose run lint
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     unit)
         setUpDockerComposeDotEnv
-        docker-compose run unit
+        docker compose run unit
         SUITE_EXIT_CODE=$?
-        docker-compose down
+        docker compose down
         ;;
     update)
         # pull typo3/core-testing-*:latest versions of those ones that exist locally
