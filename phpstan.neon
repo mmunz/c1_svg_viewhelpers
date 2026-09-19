@@ -1,7 +1,6 @@
 parameters:
   level: 8
   reportUnmatchedIgnoredErrors: false
-  checkMissingIterableValueType: false
   bootstrapFiles:
     - %currentWorkingDirectory%/phpstan.bootstrap.php
   paths:
@@ -12,5 +11,4 @@ parameters:
   ignoreErrors:
     - message: '#Variable \$_EXTKEY might not be defined#'
       path: '*/ext_emconf.php'
-  excludePaths:
-    - Tests/Acceptance/_support/_generated
+    - identifier: missingType.iterableValue

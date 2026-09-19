@@ -48,7 +48,8 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     public function initializeArguments(): void
     {
         parent::initializeArguments();
-        $this->registerUniversalTagAttributes();
+        $this->registerArgument('class', 'string', 'CSS class(es) for this element');
+        $this->registerArgument('title', 'string', 'Tooltip text of element');
         $this->registerArgument('identifier', 'string', 'the identifier of the Icon as given in the svg-sprite', true);
         $this->registerArgument('symbolFile', 'string', 'Path to a symbolfile or key from typoscript presets to use.', false, 'default');
         $this->registerArgument('baseClass', 'string', 'base css classname', false);
@@ -238,10 +239,10 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     private function buildTag(): string
     {
         $this->tag->setTagName('span');
-        $this->tag->addAttribute('class', $this->getCssClassNames());
         if ($this->hasArgument('title') && $this->arguments['title'] != '') {
             $this->tag->addAttribute('title', $this->arguments['title']);
         }
+        $this->tag->addAttribute('class', $this->getCssClassNames());
         $this->tag->setContent($this->buildSvgTag());
 
         return $this->tag->render();

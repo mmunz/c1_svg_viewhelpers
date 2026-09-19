@@ -18,7 +18,7 @@ jobs:
       - name: Add GITHUB_TOKEN if available
         run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
       - name: Install testing system
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -s composerUpdate
+        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t 13 -s composerUpdate
       - name: TypoScript lint
         run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -s typoScriptLint
       - name: Lint php
