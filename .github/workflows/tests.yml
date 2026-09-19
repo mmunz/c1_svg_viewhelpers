@@ -5,6 +5,22 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-22.04
+    name: Linting
+    steps:
+      - uses: actions/checkout@v7
+      - name: Add GITHUB_TOKEN if available
+        run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
+      - name: Install testing system
+        run: Build/Scripts/runTests.sh -p 8.4 -t 13 -s composerUpdate
+      - name: TypoScript lint
+        run: Build/Scripts/runTests.sh -p 8.4 -s typoScriptLint
+      - name: Lint php
+        run: Build/Scripts/runTests.sh -n -p 8.4 -s lint
+      - name: CGL (php-cs-fixer)
+        run: Build/Scripts/runTests.sh -n -p 8.4 -s cgl
+
+  phpstan:
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -12,19 +28,13 @@ jobs:
           - { php: "8.2" }
           - { php: "8.3" }
           - { php: "8.4" }
-    name: Linting on PHP${{ matrix.env.php }}
+    name: phpstan on PHP${{ matrix.env.php }}
     steps:
       - uses: actions/checkout@v7
       - name: Add GITHUB_TOKEN if available
         run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
       - name: Install testing system
         run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t 13 -s composerUpdate
-      - name: TypoScript lint
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -s typoScriptLint
-      - name: Lint php
-        run: Build/Scripts/runTests.sh -n -p ${{ matrix.env.php }} -s cgl
-      - name: CGL (php-cs-fixer)
-        run: Build/Scripts/runTests.sh -n -p ${{ matrix.env.php }} -s cgl
       - name: phpstan
         run: Build/Scripts/runTests.sh -n -p ${{ matrix.env.php }} -s phpstan
 
