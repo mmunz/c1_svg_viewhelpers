@@ -8,6 +8,9 @@ services:
     working_dir: ${ROOT_DIR}
     environment:
       COMPOSER_CACHE_DIR: ".Build/.cache/composer"
+      # Taken from the caller's environment, not from .env, so a token never lands on
+      # disk. Empty when unset, which composer treats as "no credentials".
+      COMPOSER_AUTH: "${COMPOSER_AUTH:-}"
     command: >
       /bin/sh -c "
         if [ ${SCRIPT_VERBOSE} -eq 1 ]; then

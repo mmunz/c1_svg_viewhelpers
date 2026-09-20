@@ -19,12 +19,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Add GITHUB_TOKEN if available
+      - name: Install testing system
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
-      - name: Install testing system
-        run: Build/Scripts/runTests.sh -p 8.4 -t 13 -s composerUpdate
+        run: |
+          # Forwarded into the container by docker-compose, so it never reaches
+          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
+          # correct under "bash -e" if these lines are ever reordered.
+          if [ -n "$GITHUB_TOKEN" ]; then
+            export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
+          fi
+          Build/Scripts/runTests.sh -p 8.4 -t 13 -s composerUpdate
       - name: TypoScript lint
         run: Build/Scripts/runTests.sh -p 8.4 -s typoScriptLint
       - name: Lint php
@@ -51,12 +56,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Add GITHUB_TOKEN if available
+      - name: Install testing system
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
-      - name: Install testing system
-        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t 13 -s composerUpdate
+        run: |
+          # Forwarded into the container by docker-compose, so it never reaches
+          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
+          # correct under "bash -e" if these lines are ever reordered.
+          if [ -n "$GITHUB_TOKEN" ]; then
+            export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
+          fi
+          Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t 13 -s composerUpdate
       - name: phpstan
         run: Build/Scripts/runTests.sh -n -p "$MATRIX_PHP" -s phpstan
 
@@ -80,12 +90,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Add GITHUB_TOKEN if available
+      - name: Install testing system
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
-      - name: Install testing system
-        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -s composerUpdate
+        run: |
+          # Forwarded into the container by docker-compose, so it never reaches
+          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
+          # correct under "bash -e" if these lines are ever reordered.
+          if [ -n "$GITHUB_TOKEN" ]; then
+            export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
+          fi
+          Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -s composerUpdate
       - name: Unit Tests
         run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -s unit
       - name: Functional Tests with sqlite
