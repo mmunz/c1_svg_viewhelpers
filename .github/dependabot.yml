@@ -1,0 +1,16 @@
+version: 2
+
+updates:
+  # Actions in .github/workflows are pinned to commit hashes, which Dependabot
+  # bumps together with the trailing "# vX.Y.Z" comment.
+  #
+  # cooldown only delays version updates. Security updates raised from an
+  # advisory bypass it, so a compromised release has a week to be noticed
+  # without holding back an actual fix. Note that github-actions supports
+  # default-days only; the semver-*-days keys are for SemVer ecosystems.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
