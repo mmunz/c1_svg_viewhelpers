@@ -29,6 +29,7 @@
          failOnRisky="true"
          failOnWarning="true"
          requireCoverageMetadata="false"
+         testdox="true"
 >
     <testsuites>
         <testsuite name="Functional tests">
