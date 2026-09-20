@@ -57,5 +57,7 @@ jobs:
         run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
       - name: Install testing system
         run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -s composerUpdate
+      - name: Unit Tests
+        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -s unit
       - name: Functional Tests with sqlite
         run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -d sqlite -s functional

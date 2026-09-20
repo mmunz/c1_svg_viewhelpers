@@ -4,6 +4,7 @@
 /.idea
 /.php-cs-fixer.cache
 /Tests/.phpunit.result.cache
+/Tests/.phpunit.cache/
 /var/
 /.cache
 /composer.json.testing

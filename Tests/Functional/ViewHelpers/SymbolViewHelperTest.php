@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace C1\SvgViewHelpers\Tests\Functional\ViewHelpers;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -234,10 +236,8 @@ class SymbolViewHelperTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider renderSymbolDataProvider
-     */
+    #[Test]
+    #[DataProvider('renderSymbolDataProvider')]
     public function renderSymbol(
         array $arguments,
         string $typoScript,
