@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace C1\SvgViewHelpers\ViewHelpers;
 
 use C1\SvgViewHelpers\Utilities\TypoScript;
@@ -107,10 +109,12 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
      */
     private function setBaseClass(): void
     {
+        // Cast both: Fluid does not coerce scalars, so a "string" argument can arrive as
+        // an int, and a preset value comes from TypoScript untyped.
         if ($this->arguments['baseClass']) {
-            $this->baseClass = $this->arguments['baseClass'];
+            $this->baseClass = (string)$this->arguments['baseClass'];
         } else {
-            $this->baseClass = $this->getPresetFromSettings('baseClass', 'icon-default');
+            $this->baseClass = (string)$this->getPresetFromSettings('baseClass', 'icon-default');
         }
     }
 

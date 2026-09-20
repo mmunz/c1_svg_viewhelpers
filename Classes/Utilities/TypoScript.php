@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace C1\SvgViewHelpers\Utilities;
 
 use TYPO3\CMS\Core\Log\LogManager;

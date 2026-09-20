@@ -261,6 +261,21 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertStringContainsString('<svg aria-label="my aria label" role="img">', $rendered);
     }
 
+    // Fluid's LenientArgumentProcessor passes scalars through unconverted: "You might
+    // receive an integer, even if the ViewHelper specifies string as argument type".
+    // Under declare(strict_types=1) that turned into a TypeError on the typed
+    // $baseClass property, so the values are cast explicitly.
+    #[Test]
+    public function argumentsSurviveArrivingAsIntegers(): void
+    {
+        $rendered = $this->render(
+            ['identifier' => 456, 'baseClass' => 123, 'class' => 789],
+            $this->settingsWithDefaultPreset([])
+        );
+
+        self::assertSame('123 123-456 123-456-dims 789', $this->classAttributeOf($rendered));
+    }
+
     // role is registered with a default, so hasArgument() -- being isset() -- is always
     // true and an explicit role="" used to render as role="", which is invalid ARIA.
     // ariaLabel and title next to it already checked for an empty value.
