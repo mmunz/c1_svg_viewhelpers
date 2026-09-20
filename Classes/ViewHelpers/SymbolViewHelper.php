@@ -67,13 +67,22 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     }
 
     /*
+     * Get the configured presets. TypoScript is not guaranteed to be loaded, so
+     * fall back to an empty list rather than tripping over missing array keys.
+     */
+    private function getPresets(): array
+    {
+        return $this->settings['svg']['symbol']['presets'] ?? [];
+    }
+
+    /*
      * Set the symbolFile, either from
      * - TypoScript presets
      * - symbolFile argument
      */
     private function setSymbolFile(): void
     {
-        $presets = $this->settings['svg']['symbol']['presets'];
+        $presets = $this->getPresets();
         if (
             $this->hasArgument('symbolFile')
             && isset($presets[$this->arguments['symbolFile']])
@@ -123,7 +132,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
      */
     private function getPresetFromSettings(string $key, $default)
     {
-        $presets = $this->settings['svg']['symbol']['presets'];
+        $presets = $this->getPresets();
         if (
             isset($presets[$this->arguments['symbolFile']])
             && array_key_exists($key, $presets[$this->arguments['symbolFile']])

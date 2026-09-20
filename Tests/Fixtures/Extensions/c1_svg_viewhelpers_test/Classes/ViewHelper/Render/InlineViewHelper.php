@@ -9,9 +9,6 @@ namespace C1\SvgViewhelpersTest\ViewHelper\Render;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderStatic;
-
 /**
  * ### Render: Inline
  *
@@ -26,8 +23,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithContentArgumentAndRenderS
  */
 class InlineViewHelper extends AbstractRenderViewHelper
 {
-    use CompileWithContentArgumentAndRenderStatic;
-
     /**
      * @var bool
      */
@@ -47,21 +42,24 @@ class InlineViewHelper extends AbstractRenderViewHelper
     }
 
     /**
-     * @return string
+     * Makes the "content" argument take precedence over the tag content, the way
+     * the removed CompileWithContentArgumentAndRenderStatic trait used to do.
      */
-    public static function renderStatic(
-        array $arguments,
-        \Closure $renderChildrenClosure,
-        RenderingContextInterface $renderingContext
-    ) {
-        $content = $renderChildrenClosure();
-        $namespaces = static::getPreparedNamespaces($arguments);
+    public function getContentArgumentName(): ?string
+    {
+        return 'content';
+    }
+
+    public function render(): string
+    {
+        $content = (string)$this->renderChildren();
+        $namespaces = static::getPreparedNamespaces($this->arguments);
         $namespaceHeader = implode(LF, $namespaces);
         foreach ($namespaces as $namespace) {
             $content = str_replace($namespace, '', $content);
         }
-        $view = static::getPreparedClonedView($renderingContext);
+        $view = static::getPreparedClonedView($this->renderingContext);
         $view->setTemplateSource($namespaceHeader . $content);
-        return static::renderView($view, $arguments);
+        return static::renderView($view, $this->arguments);
     }
 }

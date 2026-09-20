@@ -205,6 +205,22 @@ final class SymbolViewHelperTest extends UnitTestCase
         );
     }
 
+    /**
+     * TypoScript is not guaranteed to be loaded: the extension may be installed
+     * without its set/static template being included. The ViewHelper must then
+     * fall back to its defaults instead of tripping over missing array keys.
+     */
+    #[Test]
+    public function renderingWithoutAnyTypoScriptSettingsFallsBackToDefaults(): void
+    {
+        $rendered = $this->render(['identifier' => 'house'], []);
+
+        self::assertSame(
+            'icon-default icon-default-house icon-default-house-dims',
+            $this->classAttributeOf($rendered)
+        );
+    }
+
     #[Test]
     public function symbolFileArgumentMatchingAPresetKeyUsesThePresetFile(): void
     {
