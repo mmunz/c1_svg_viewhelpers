@@ -16,6 +16,12 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     protected bool $preload = false;
     protected array $settings = [];
 
+    /*
+     * Cache buster per absolute file name, see getCacheBuster().
+     * @var array<string, string>
+     */
+    private static array $cacheBusters = [];
+
     /**
      * @var PageRenderer
      */
@@ -195,10 +201,11 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     // Get public path of the symbolFile
     private function getSvgPublicFile(): string
     {
-        if ($this->symbolsFile && $this->getSymbolFilePath()) {
-            return $this->getSymbolFilePath();
+        if ($this->symbolsFile === '') {
+            return $this->symbolsFile;
         }
-        return $this->symbolsFile;
+        $path = $this->getSymbolFilePath();
+        return $path !== '' ? $path : $this->symbolsFile;
     }
 
     // Return cache buster enabled or not
@@ -207,13 +214,35 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         return $this->arguments['cacheBuster'] ? true : false;
     }
 
-    // Get cache buster string
+    /*
+     * Get cache buster string.
+     *
+     * Memoised per absolute file name, because this runs once for the <use> tag and
+     * again for the preload header, for every icon on the page. Hashing a sprite is
+     * proportional to its size, so without this a page reads the same file dozens of
+     * times per request.
+     *
+     * Static rather than per-instance: Fluid hands out one ViewHelper instance per tag,
+     * so an instance cache would not help across the icons of a page. The settings are
+     * deliberately NOT cached this way -- they differ between requests, and functional
+     * tests run several requests in one process.
+     *
+     * The trade-off is that a sprite replaced while the process is alive keeps its old
+     * hash. That is a non-issue for a web request and acceptable for a worker, since
+     * the value is only a cache buster.
+     */
     private function getCacheBuster(): string
     {
-        if (!empty($this->symbolsFile) && file_exists($this->getAbsoluteFilename())) {
-            return '?cb=' . md5_file($this->getAbsoluteFilename());
+        if ($this->symbolsFile === '') {
+            return '';
         }
-        return '';
+        $absoluteFilename = $this->getAbsoluteFilename();
+        if (!array_key_exists($absoluteFilename, self::$cacheBusters)) {
+            self::$cacheBusters[$absoluteFilename] = file_exists($absoluteFilename)
+                ? '?cb=' . md5_file($absoluteFilename)
+                : '';
+        }
+        return self::$cacheBusters[$absoluteFilename];
     }
 
     private function getSymbolFileURL(): string
