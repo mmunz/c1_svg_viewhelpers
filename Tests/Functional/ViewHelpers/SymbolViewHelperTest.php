@@ -176,6 +176,37 @@ class SymbolViewHelperTest extends FunctionalTestCase
                     '<span class="icon-default icon-default-house icon-default-house-dims"><svg role="graphics-symbol"><use xlink:href="' . self::spriteWithoutCacheBuster('sprite-default.svg') . '#house" /></svg></span>',
                 ],
             ],
+            // The ViewHelper reads cacheBuster as a plain truthy check and preload through
+            // filter_var(). Those disagree on the string "false", which is truthy in PHP.
+            // They never see it: Fluid wraps boolean-typed tag arguments in a BooleanNode,
+            // which resolves "false" to false first. These two cases pin that, so the
+            // assumption is verified rather than relied upon.
+            'string "false" disables the cache buster' => [
+                [
+                    'identifier' => 'house',
+                    'cacheBuster' => 'false',
+                ],
+                '',
+                [
+                    '<use xlink:href="' . self::spriteWithoutCacheBuster('sprite-default.svg') . '#house" />',
+                ],
+                [
+                    '?cb=',
+                ],
+            ],
+            'string "false" disables preloading' => [
+                [
+                    'identifier' => 'house',
+                    'preload' => 'false',
+                ],
+                '',
+                [
+                    '<span class="icon-default icon-default-house icon-default-house-dims">',
+                ],
+                [
+                    '<link rel="preload"',
+                ],
+            ],
             'role set to img' => [
                 [
                     'identifier' => 'house',
