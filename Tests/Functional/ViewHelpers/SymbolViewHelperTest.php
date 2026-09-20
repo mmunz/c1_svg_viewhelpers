@@ -18,9 +18,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 class SymbolViewHelperTest extends FunctionalTestCase
 {
-    // The sprites live under the fixture extension's Resources/Public because that is
-    // the only layout PathUtility::getPublicResourceWebPath() supports without a
-    // deprecation -- and in Composer mode without an exception.
+    // Under Resources/Public because getPublicResourceWebPath() deprecates any other
+    // layout, and throws on it in Composer mode.
     private const FIXTURE_SPRITE_DIR
         = 'Tests/Fixtures/Extensions/c1_svg_viewhelpers_test/Resources/Public/Sprites/';
     protected array $testExtensionsToLoad = [
@@ -279,9 +278,8 @@ class SymbolViewHelperTest extends FunctionalTestCase
                     '<link rel="preload" href="' . $default . '" as="image" fetchpriority="high" />',
                 ],
             ],
-            // The preload header goes through PageRenderer::addHeaderData(), which escapes
-            // nothing, and nothing constrains symbolFile to an actual path. Before the tag
-            // was built with a TagBuilder this put the payload into <head> verbatim.
+            // addHeaderData() escapes nothing, and nothing constrains symbolFile to an
+            // actual path.
             'markup in the symbol file path is escaped in the preload header' => [
                 [
                     'identifier' => 'house',
@@ -296,8 +294,6 @@ class SymbolViewHelperTest extends FunctionalTestCase
                 ],
             ],
             // Through real TypoScript, where the value arrives as the string "false".
-            // Before setPreload() ran the preset through toBoolean(), assigning it to
-            // the bool property made it true and switched preloading on.
             'preset "false" disables preloading' => [
                 [
                     'identifier' => 'house',

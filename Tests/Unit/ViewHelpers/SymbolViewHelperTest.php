@@ -120,8 +120,7 @@ final class SymbolViewHelperTest extends UnitTestCase
                 ['preload' => false],
                 false,
             ],
-            // Preloading is opt-in: neither an argument nor a preset means off, which
-            // is what README and CHANGELOG have always documented.
+            // Opt-in, as README and CHANGELOG document.
             'preload defaults to off when neither is set' => [
                 ['identifier' => 'house'],
                 [],
@@ -171,9 +170,7 @@ final class SymbolViewHelperTest extends UnitTestCase
         );
     }
 
-    // The preset branch of setPreload() receives raw TypoScript, which is always a
-    // string. Assigned straight to a typed bool property, PHP's weak coercion turns
-    // every non-empty string true -- "false" included.
+    // TypoScript always delivers strings, and weak coercion would make "false" true.
     public static function preloadPresetStringValuesDataProvider(): array
     {
         return [
@@ -211,9 +208,8 @@ final class SymbolViewHelperTest extends UnitTestCase
         );
     }
 
-    // getPresetFromSettings() keys off the symbolFile argument, so passing a path
-    // rather than a preset key matches no preset and falls back. While that fallback
-    // was true, an explicit symbolFile silently preloaded.
+    // getPresetFromSettings() keys off the symbolFile argument, so a path rather than a
+    // preset key matches nothing and falls back -- which must not mean "preload".
     #[Test]
     public function anExplicitSymbolFilePathDoesNotPreloadByItself(): void
     {
@@ -261,10 +257,8 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertStringContainsString('<svg aria-label="my aria label" role="img">', $rendered);
     }
 
-    // Fluid's LenientArgumentProcessor passes scalars through unconverted: "You might
-    // receive an integer, even if the ViewHelper specifies string as argument type".
-    // Under declare(strict_types=1) that turned into a TypeError on the typed
-    // $baseClass property, so the values are cast explicitly.
+    // Fluid's LenientArgumentProcessor passes scalars through unconverted, so a "string"
+    // argument can arrive as an int -- a TypeError under strict_types without the casts.
     #[Test]
     public function argumentsSurviveArrivingAsIntegers(): void
     {
@@ -276,9 +270,8 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertSame('123 123-456 123-456-dims 789', $this->classAttributeOf($rendered));
     }
 
-    // role is registered with a default, so hasArgument() -- being isset() -- is always
-    // true and an explicit role="" used to render as role="", which is invalid ARIA.
-    // ariaLabel and title next to it already checked for an empty value.
+    // role has a default, so hasArgument() -- being isset() -- is always true; without
+    // the extra check an explicit role="" would reach the markup as invalid ARIA.
     #[Test]
     public function anEmptyRoleIsNotRendered(): void
     {

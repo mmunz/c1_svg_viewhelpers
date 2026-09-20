@@ -18,10 +18,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     protected bool $preload = false;
     protected array $settings = [];
 
-    /*
-     * Cache buster per absolute file name, see getCacheBuster().
-     * @var array<string, string>
-     */
+    /** Keyed by absolute file name, see getCacheBuster(). */
     private static array $cacheBusters = [];
 
     /**
@@ -129,9 +126,8 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         if ($this->hasArgument('preload')) {
             $this->preload = $this->toBoolean($this->arguments['preload']);
         } else {
-            // Also through toBoolean(): TypoScript hands over strings, and assigning
-            // one to the bool property directly made every non-empty value true, so
-            // "preload = false" switched preloading on.
+            // toBoolean() here too: TypoScript sends strings, and a bare assignment to
+            // the bool property would make "false" true.
             $this->preload = $this->toBoolean($this->getPresetFromSettings('preload', false));
         }
     }
@@ -187,12 +183,9 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     }
 
     /*
-     * Get the resolved web path to the symbolFile.
-     *
-     * EXT: paths go through getPublicResourceWebPath(), which is the only one that maps
-     * an extension resource to its published _assets/ location. getAbsoluteWebPath()
-     * alone returns the absolute server path for anything it cannot place below the
-     * public directory, which in Composer mode is every extension in vendor/.
+     * getAbsoluteWebPath() returns the absolute server path for anything it cannot
+     * place below the public directory -- in Composer mode every extension in vendor/.
+     * getPublicResourceWebPath() maps EXT: paths to their published _assets/ location.
      */
     private function getSymbolFilePath(): string
     {
@@ -219,21 +212,10 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     }
 
     /*
-     * Get cache buster string.
-     *
-     * Memoised per absolute file name, because this runs once for the <use> tag and
-     * again for the preload header, for every icon on the page. Hashing a sprite is
-     * proportional to its size, so without this a page reads the same file dozens of
-     * times per request.
-     *
-     * Static rather than per-instance: Fluid hands out one ViewHelper instance per tag,
-     * so an instance cache would not help across the icons of a page. The settings are
-     * deliberately NOT cached this way -- they differ between requests, and functional
-     * tests run several requests in one process.
-     *
-     * The trade-off is that a sprite replaced while the process is alive keeps its old
-     * hash. That is a non-issue for a web request and acceptable for a worker, since
-     * the value is only a cache buster.
+     * Runs per icon, twice (<use> tag and preload header), and hashing costs scale with
+     * sprite size -- hence the memo. Static, because Fluid hands out one ViewHelper
+     * instance per tag. The settings must NOT be cached this way: they differ between
+     * requests, and functional tests issue several per process.
      */
     private function getCacheBuster(): string
     {

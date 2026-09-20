@@ -14,9 +14,7 @@ final class TypoScriptTest extends UnitTestCase
     // integrity check would otherwise report as leaked framework state.
     protected bool $resetSingletonInstances = true;
 
-    // No request is available here, which is one of the three scopes where TYPO3 v13
-    // refuses to hand out full TypoScript. Reading settings must degrade to defaults
-    // rather than take the page down with it.
+    // Reading settings must degrade to defaults rather than take the page down.
     #[Test]
     public function returnsAnEmptyArrayWhenTypoScriptCannotBeRead(): void
     {

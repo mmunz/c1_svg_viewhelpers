@@ -23,9 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Forwarded into the container by docker-compose, so it never reaches
-          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
-          # correct under "bash -e" if these lines are ever reordered.
+          # docker-compose forwards this into the container; .env never sees it.
           if [ -n "$GITHUB_TOKEN" ]; then
             export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
           fi
@@ -47,9 +45,8 @@ jobs:
           - { php: "8.3" }
           - { php: "8.4" }
     name: phpstan on PHP${{ matrix.env.php }}
-    # Passed through the environment rather than interpolated into run:, so the
-    # shell treats the value as data. Deliberately not named PHP_VERSION, which
-    # runTests.sh assigns itself.
+    # Through the environment, not interpolated into run:. Not named PHP_VERSION,
+    # which runTests.sh assigns itself.
     env:
       MATRIX_PHP: ${{ matrix.env.php }}
     steps:
@@ -60,9 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Forwarded into the container by docker-compose, so it never reaches
-          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
-          # correct under "bash -e" if these lines are ever reordered.
+          # docker-compose forwards this into the container; .env never sees it.
           if [ -n "$GITHUB_TOKEN" ]; then
             export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
           fi
@@ -94,9 +89,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Forwarded into the container by docker-compose, so it never reaches
-          # Build/testing-docker/.env. An "if" rather than "&&" so the step stays
-          # correct under "bash -e" if these lines are ever reordered.
+          # docker-compose forwards this into the container; .env never sees it.
           if [ -n "$GITHUB_TOKEN" ]; then
             export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
           fi

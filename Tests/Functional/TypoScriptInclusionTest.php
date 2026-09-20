@@ -13,11 +13,9 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
- * Covers how an integrator actually gets the extension's TypoScript into a site.
- *
- * SymbolViewHelperTest feeds the .typoscript files into the template record by path,
- * which bypasses both mechanisms below — so it would stay green even if neither were
- * wired up. That is exactly how the missing v12 static template went unnoticed.
+ * SymbolViewHelperTest feeds the .typoscript files in by path, bypassing both
+ * mechanisms below, so it stays green even when neither is wired up. That is how the
+ * missing v12 static template went unnoticed.
  */
 final class TypoScriptInclusionTest extends FunctionalTestCase
 {
@@ -40,9 +38,6 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         $this->importCSVDataSet(ORIGINAL_ROOT . '/../../Tests/Fixtures/Database/pages.csv');
     }
 
-    /**
-     * @param array<string, mixed> $siteConfiguration
-     */
     private function writeSiteConfiguration(array $siteConfiguration = []): void
     {
         // SiteWriter was extracted from SiteConfiguration in TYPO3 v13.
@@ -62,11 +57,8 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         )->getBody();
     }
 
-    /**
-     * Asserts the shipped default preset arrived. The cache buster is the telling part:
-     * getCacheBuster() only emits one when the resolved file actually exists, so this
-     * also covers the preset pointing somewhere real.
-     */
+    // The cache buster is the telling part: it only appears when the resolved file
+    // exists, so this covers the preset pointing somewhere real too.
     private function assertShippedDefaultPresetWasUsed(string $body): void
     {
         self::assertMatchesRegularExpression(
@@ -76,12 +68,8 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         self::assertStringNotContainsString('xlink:href="/default#placeholder"', $body);
     }
 
-    /**
-     * The static template is what a v12 integrator selects under "Include static (from
-     * extensions)". v12 has no site sets, so without this the presets are unreachable
-     * there — the ViewHelper falls back to the literal argument default and emits
-     * <use xlink:href="/default#house">.
-     */
+    // What a v12 integrator selects under "Include static (from extensions)". v12 has
+    // no site sets, so without it no preset is reachable there at all.
     #[Test]
     public function presetsAreReachableThroughTheStaticTemplate(): void
     {
@@ -95,9 +83,6 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         $this->assertShippedDefaultPresetWasUsed($this->renderPlaceholderIcon());
     }
 
-    /**
-     * The site set is the v13.1+ mechanism and the one the README should point at.
-     */
     #[Test]
     public function presetsAreReachableThroughTheSiteSet(): void
     {
