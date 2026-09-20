@@ -2,6 +2,12 @@
 
 SVG related ViewHelpers for TYPO3 Fluid.
 
+## Requirements
+
+TYPO3 v12 or v13. Tested against PHP 8.2, 8.3 and 8.4.
+
+Note the site set used below needs TYPO3 v13.1; on v12 and v13.0 use the static template.
+
 ## Installation
 
 via composer:
@@ -80,19 +86,34 @@ work once you do.
 
 #### Arguments
 
-| attribute   | Description                                                    | Type      | default         | required    |
-|:------------|:---------------------------------------------------------------| :---      |:----------------| :---        |
-| identifier  | icon id in the symbols file                                    | string    |                 | yes         |
-| symbolFile  | Preset identifier or path to file, also supports EXT: notation | string    | default         | no          |
-| baseClass   | Prefix for the icon's class names                              | string    | icon-default    | no          |
-| role        | role for accessibility                                         | string    | graphics-symbol | no          |
-| ariaLabel   | Sets the aria-label on the svg tag for accessibility           | string    |                 | no          |
-| cacheBuster | Add a cache buster parameter to the symbolFile url             | bool      | true            | no          |
-| preload     | Preload the symbols file by inserting a link rel="preload" tag | bool      | false           | no          |
+| attribute   | Description                                                             | Type   | default         | required |
+|:------------|:------------------------------------------------------------------------|:-------|:----------------|:---------|
+| identifier  | icon id in the symbols file                                             | string |                 | yes      |
+| symbolFile  | Preset identifier or path to file, also supports EXT: notation          | string | default         | no       |
+| baseClass   | Prefix for the icon's class names                                       | string | see below       | no       |
+| class       | Additional CSS class(es), **appended** to the generated ones            | string |                 | no       |
+| title       | Tooltip text, rendered on the outer `span`                              | string |                 | no       |
+| role        | role attribute on the `svg`; an empty value omits the attribute         | string | graphics-symbol | no       |
+| ariaLabel   | Sets the aria-label on the svg tag for accessibility                    | string |                 | no       |
+| cacheBuster | Add a cache buster parameter to the symbolFile url                      | bool   | true            | no       |
+| preload     | Preload the symbols file by inserting a link rel="preload" tag          | bool   | false           | no       |
 
-In addition all universal tag attributes are supported:
+`baseClass` is resolved in this order: the argument, then the `baseClass` of the preset
+selected by `symbolFile`, then `icon-default`. The site set ships `icon-default` as the
+preset value, so that is the effective default until you change it.
 
-class, dir, id, lang, style, title, accesskey, tabindex and onclick
+`class` does not replace the generated class names, it is appended to them:
+
+```html
+<svgvh:symbol identifier='house' class='is-active' />
+<!-- class="icon-default icon-default-house icon-default-house-dims is-active" -->
+```
+
+`preload` is off unless you ask for it, either per tag or through the preset.
+
+Beyond these, Fluid's tag attribute handling applies: any further attribute — `dir`, for
+instance — is passed through to the outer `span`, as are the `data` and `aria` arrays and
+`additionalAttributes`.
 
 ## Creating SVG symbols file and SCSS
 
