@@ -1,0 +1,4 @@
+# Static template for TYPO3 v12, which has no site sets (those arrive in v13.1).
+# The values live in the site set; this only makes them reachable via
+# "Include static (from extensions)" on the sys_template record.
+@import 'EXT:c1_svg_viewhelpers/Configuration/Sets/Default/constants.typoscript'

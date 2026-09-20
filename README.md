@@ -12,7 +12,12 @@ composer req c1/c1-svg-viewhelpers
 
 ## Configuration
 
-1. Include the static TypoScript setup and constants
+1. Load the extension's TypoScript:
+   - **TYPO3 v13.1 and newer:** add the site set `c1/svg-viewhelpers-default` to your site,
+     either in *Site Management > Sites* or as a `dependencies` entry in the site's
+     `config.yaml`.
+   - **TYPO3 v12:** select *SVG Viewhelpers: Default* under *Include static (from extensions)*
+     in your root TypoScript template record.
 2. Create a symbols file and CSS (or SCSS or LESS) classes, see below
 3. Include the generated S(CSS) or LESS files
 4. Configure the presets in the TypoScript constants and or setup, i.e. set

@@ -1,0 +1,2 @@
+# See constants.typoscript next to this file.
+@import 'EXT:c1_svg_viewhelpers/Configuration/Sets/Default/setup.typoscript'
