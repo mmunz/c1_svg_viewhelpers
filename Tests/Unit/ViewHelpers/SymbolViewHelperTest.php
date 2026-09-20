@@ -261,6 +261,21 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertStringContainsString('<svg aria-label="my aria label" role="img">', $rendered);
     }
 
+    // role is registered with a default, so hasArgument() -- being isset() -- is always
+    // true and an explicit role="" used to render as role="", which is invalid ARIA.
+    // ariaLabel and title next to it already checked for an empty value.
+    #[Test]
+    public function anEmptyRoleIsNotRendered(): void
+    {
+        $rendered = $this->render(
+            ['identifier' => 'house', 'role' => ''],
+            $this->settingsWithDefaultPreset([])
+        );
+
+        self::assertStringContainsString('<svg>', $rendered);
+        self::assertStringNotContainsString('role=', $rendered);
+    }
+
     #[Test]
     public function titleIsRenderedOnTheOuterSpanAndNotOnTheSvg(): void
     {

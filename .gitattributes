@@ -10,3 +10,4 @@ Build export-ignore
 Build/** export-ignore
 Tests export-ignore
 Tests/** export-ignore
+Configuration/TsLint.yml export-ignore

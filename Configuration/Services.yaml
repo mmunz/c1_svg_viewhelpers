@@ -6,4 +6,3 @@ services:
 
   C1\SvgViewHelpers\:
     resource: '../Classes/*'
-    exclude: '../Classes/Domain/Model/*'

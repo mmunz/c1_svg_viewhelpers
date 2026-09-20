@@ -92,10 +92,10 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
             && array_key_exists('file', $presets[$this->arguments['symbolFile']])
         ) {
             $this->symbolsFile = (string)$presets[$this->arguments['symbolFile']]['file'];
-        } elseif ($this->hasArgument('symbolFile')) {
-            $this->symbolsFile = (string)$this->arguments['symbolFile'];
         } else {
-            $this->symbolsFile = 'default';
+            // No preset of that name: treat the argument as a path. It always has a
+            // value -- registerArgument() gives it the default 'default'.
+            $this->symbolsFile = (string)$this->arguments['symbolFile'];
         }
     }
 
@@ -118,7 +118,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
      * Set the preload argument either from (in this order)
      * - preload viewhelper argument
      * - TypoScript Presets
-     * - fallback to true if the value was not set by the 2 options above
+     * - fallback to off if the value was not set by the 2 options above
      */
     private function setPreload(): void
     {
@@ -269,13 +269,12 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     {
         $tagBuilder = $this->getTagBuilder();
         $tagBuilder->setTagName('svg');
-        $tagBuilder->removeAttribute('title');
 
         if ($this->hasArgument('ariaLabel') && $this->arguments['ariaLabel'] != '') {
             $tagBuilder->addAttribute('aria-label', ($this->arguments['ariaLabel']));
         }
 
-        if ($this->hasArgument('role')) {
+        if ($this->hasArgument('role') && $this->arguments['role'] != '') {
             $tagBuilder->addAttribute('role', ($this->arguments['role']));
         }
         $tagBuilder->setContent($this->buildUseTag());
