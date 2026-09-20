@@ -11,21 +11,11 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * Unit tests for the argument/TypoScript resolution logic of the symbol ViewHelper.
- *
- * These cover the pure decision logic (which base class, which symbol file, whether
- * to preload) in isolation. Rendering against real sprite files and real EXT: path
- * resolution is covered by the functional test of the same name.
+ * Resolution logic in isolation. Real sprite files and EXT: path resolution are
+ * covered by the functional test of the same name.
  */
 final class SymbolViewHelperTest extends UnitTestCase
 {
-    /**
-     * Builds the settings array as it arrives from TypoScript, with the given
-     * values merged into the "default" preset.
-     *
-     * @param array<string, mixed> $preset
-     * @return array<string, mixed>
-     */
     private function settingsWithDefaultPreset(array $preset): array
     {
         return [
@@ -39,15 +29,8 @@ final class SymbolViewHelperTest extends UnitTestCase
         ];
     }
 
-    /**
-     * Renders the ViewHelper with the given arguments and TypoScript settings.
-     *
-     * Arguments are merged onto the registered defaults the same way Fluid's
-     * invoker would do it, so that hasArgument() behaves as in a real render.
-     *
-     * @param array<string, mixed> $arguments
-     * @param array<string, mixed> $settings
-     */
+    // Arguments are merged onto the registered defaults the way Fluid's invoker
+    // does, so that hasArgument() behaves as in a real render.
     private function render(array $arguments, array $settings, ?PageRenderer $pageRenderer = null): string
     {
         $viewHelper = new SymbolViewHelper();
@@ -63,18 +46,12 @@ final class SymbolViewHelperTest extends UnitTestCase
         return $viewHelper->render();
     }
 
-    /**
-     * Extracts the class attribute of the outer span.
-     */
     private function classAttributeOf(string $renderedTag): string
     {
         self::assertSame(1, preg_match('/<span[^>]*\sclass="([^"]*)"/', $renderedTag, $matches));
         return $matches[1];
     }
 
-    /**
-     * @return array<string, array{0: array<string, mixed>, 1: array<string, mixed>, 2: string}>
-     */
     public static function baseClassResolutionDataProvider(): array
     {
         return [
@@ -106,10 +83,6 @@ final class SymbolViewHelperTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @param array<string, mixed> $arguments
-     * @param array<string, mixed> $preset
-     */
     #[Test]
     #[DataProvider('baseClassResolutionDataProvider')]
     public function baseClassIsResolvedFromArgumentPresetOrFallback(
@@ -122,9 +95,6 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertSame($expectedClasses, $this->classAttributeOf($rendered));
     }
 
-    /**
-     * @return array<string, array{0: array<string, mixed>, 1: array<string, mixed>, 2: bool}>
-     */
     public static function preloadResolutionDataProvider(): array
     {
         return [
@@ -156,10 +126,6 @@ final class SymbolViewHelperTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @param array<string, mixed> $arguments
-     * @param array<string, mixed> $preset
-     */
     #[Test]
     #[DataProvider('preloadResolutionDataProvider')]
     public function preloadHeaderIsAddedOnlyWhenPreloadingIsEnabled(
@@ -174,12 +140,8 @@ final class SymbolViewHelperTest extends UnitTestCase
         $this->render($arguments, $this->settingsWithDefaultPreset($preset), $pageRenderer);
     }
 
-    /**
-     * The preload argument is typed as boolean, but TypoScript delivers strings.
-     * setPreload() runs the value through filter_var(), so "0" must disable it.
-     *
-     * @return array<string, array{0: mixed, 1: bool}>
-     */
+    // Invoking directly bypasses Fluid's BooleanNode coercion, so these pin
+    // setPreload()'s own filter_var() handling.
     public static function preloadStringValuesDataProvider(): array
     {
         return [
@@ -205,11 +167,7 @@ final class SymbolViewHelperTest extends UnitTestCase
         );
     }
 
-    /**
-     * TypoScript is not guaranteed to be loaded: the extension may be installed
-     * without its set/static template being included. The ViewHelper must then
-     * fall back to its defaults instead of tripping over missing array keys.
-     */
+    // Happens when the extension is installed without its set being included.
     #[Test]
     public function renderingWithoutAnyTypoScriptSettingsFallsBackToDefaults(): void
     {

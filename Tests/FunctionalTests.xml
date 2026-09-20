@@ -1,17 +1,9 @@
 <?xml version="1.0"?>
 <!--
-    Functional test suite setup.
+    Adapted from TYPO3 testing-framework's Resources/Core/Build/FunctionalTests.xml.
 
-    Based on the boilerplate loosely maintained within TYPO3 testing-framework
-    (Resources/Core/Build/FunctionalTests.xml), copied here and adapted to this
-    extension. FunctionalTestsBootstrap.php sits next to this file.
-
-    Functional tests extend \TYPO3\TestingFramework\Core\Functional\FunctionalTestCase,
-    take a look at this class for further documentation on how to run the suite.
-
-    Note: failOnDeprecation is deliberately left off. The test fixture extension
-    still uses Fluid's CompileWithContentArgumentAndRenderStatic trait, which is
-    deprecated as of Fluid v5. Deprecations are displayed, but do not fail the run.
+    failOnDeprecation is off: the fixture's AbstractRenderViewHelper still uses
+    StandaloneView and RenderingContext::get/setRequest, deprecated in TYPO3 v13.
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"

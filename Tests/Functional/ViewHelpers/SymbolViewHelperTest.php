@@ -78,11 +78,8 @@ class SymbolViewHelperTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * Public web path of a sprite in Tests/Fixtures/, including the cache buster the
-     * ViewHelper appends. Derived from the fixture itself rather than hard coded, so
-     * that touching a fixture does not break every expectation at once.
-     */
+    // Hashed from the fixture so that editing a sprite does not break every
+    // expectation at once.
     private static function sprite(string $fixtureFile): string
     {
         $hash = md5_file(__DIR__ . '/../../Fixtures/' . $fixtureFile);
@@ -92,9 +89,6 @@ class SymbolViewHelperTest extends FunctionalTestCase
         return self::spriteWithoutCacheBuster($fixtureFile) . '?cb=' . $hash;
     }
 
-    /**
-     * Public web path of a sprite in Tests/Fixtures/, without any cache buster.
-     */
     private static function spriteWithoutCacheBuster(string $fixtureFile): string
     {
         return '/typo3conf/ext/c1_svg_viewhelpers/Tests/Fixtures/' . $fixtureFile;
@@ -121,11 +115,9 @@ class SymbolViewHelperTest extends FunctionalTestCase
                 [],
                 '',
                 [
-                    // Fluid's TemplateParser rejects the missing required argument. The test
-                    // fixture catches it and renders it as "<message> (<code>)". Assert the
-                    // message too, not just the code: 1237823699 is raised for *any* missing
-                    // required argument, so on its own it would not prove that it was the
-                    // identifier that was rejected.
+                    // 1237823699 is raised for any missing required argument, so the
+                    // message is what pins it to identifier. The fixture renders the
+                    // caught exception as "<message> (<code>)".
                     'Required argument "identifier" was not supplied.',
                     '1237823699',
                 ],
@@ -176,11 +168,9 @@ class SymbolViewHelperTest extends FunctionalTestCase
                     '<span class="icon-default icon-default-house icon-default-house-dims"><svg role="graphics-symbol"><use xlink:href="' . self::spriteWithoutCacheBuster('sprite-default.svg') . '#house" /></svg></span>',
                 ],
             ],
-            // The ViewHelper reads cacheBuster as a plain truthy check and preload through
-            // filter_var(). Those disagree on the string "false", which is truthy in PHP.
-            // They never see it: Fluid wraps boolean-typed tag arguments in a BooleanNode,
-            // which resolves "false" to false first. These two cases pin that, so the
-            // assumption is verified rather than relied upon.
+            // cacheBuster is read as a plain truthy check, under which the string
+            // "false" would enable it. Fluid wraps boolean-typed arguments in a
+            // BooleanNode that resolves "false" first, so neither ever sees it.
             'string "false" disables the cache buster' => [
                 [
                     'identifier' => 'house',

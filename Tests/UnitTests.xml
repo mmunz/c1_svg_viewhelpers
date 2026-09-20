@@ -1,13 +1,5 @@
 <?xml version="1.0"?>
-<!--
-    Unit test suite setup.
-
-    Based on the boilerplate loosely maintained within TYPO3 testing-framework
-    (Resources/Core/Build/UnitTests.xml), copied here and adapted to this
-    extension. UnitTestsBootstrap.php sits next to this file.
-
-    Unit tests extend \TYPO3\TestingFramework\Core\Unit\UnitTestCase.
--->
+<!-- Adapted from TYPO3 testing-framework's Resources/Core/Build/UnitTests.xml. -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
          backupGlobals="true"

@@ -66,10 +66,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         return GeneralUtility::makeInstance('TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder');
     }
 
-    /*
-     * Get the configured presets. TypoScript is not guaranteed to be loaded, so
-     * fall back to an empty list rather than tripping over missing array keys.
-     */
+    // TypoScript is not guaranteed to be loaded, so presets may be missing entirely
     private function getPresets(): array
     {
         return $this->settings['svg']['symbol']['presets'] ?? [];

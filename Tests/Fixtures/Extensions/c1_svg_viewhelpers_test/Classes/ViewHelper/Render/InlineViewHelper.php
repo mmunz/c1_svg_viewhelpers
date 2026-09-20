@@ -41,10 +41,7 @@ class InlineViewHelper extends AbstractRenderViewHelper
         parent::initializeArguments();
     }
 
-    /**
-     * Makes the "content" argument take precedence over the tag content, the way
-     * the removed CompileWithContentArgumentAndRenderStatic trait used to do.
-     */
+    // Replaces what the dropped CompileWithContentArgumentAndRenderStatic trait did.
     public function getContentArgumentName(): ?string
     {
         return 'content';
