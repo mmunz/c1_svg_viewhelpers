@@ -169,6 +169,34 @@ final class SymbolViewHelperTest extends UnitTestCase
         );
     }
 
+    // The preset branch of setPreload() receives raw TypoScript, which is always a
+    // string. Assigned straight to a typed bool property, PHP's weak coercion turns
+    // every non-empty string true -- "false" included.
+    public static function preloadPresetStringValuesDataProvider(): array
+    {
+        return [
+            'preset "1" enables preloading' => ['1', true],
+            'preset "0" disables preloading' => ['0', false],
+            'preset "true" enables preloading' => ['true', true],
+            'preset "false" disables preloading' => ['false', false],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('preloadPresetStringValuesDataProvider')]
+    public function preloadPresetAcceptsStringBooleans(mixed $preload, bool $expectPreloadHeader): void
+    {
+        $pageRenderer = $this->createMock(PageRenderer::class);
+        $pageRenderer->expects($expectPreloadHeader ? $this->once() : $this->never())
+            ->method('addHeaderData');
+
+        $this->render(
+            ['identifier' => 'house'],
+            $this->settingsWithDefaultPreset(['preload' => $preload]),
+            $pageRenderer
+        );
+    }
+
     // Happens when the extension is installed without its set being included.
     #[Test]
     public function renderingWithoutAnyTypoScriptSettingsFallsBackToDefaults(): void

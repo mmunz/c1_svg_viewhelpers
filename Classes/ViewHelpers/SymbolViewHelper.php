@@ -119,7 +119,10 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         if ($this->hasArgument('preload')) {
             $this->preload = $this->toBoolean($this->arguments['preload']);
         } else {
-            $this->preload = $this->getPresetFromSettings('preload', true);
+            // Also through toBoolean(): TypoScript hands over strings, and assigning
+            // one to the bool property directly made every non-empty value true, so
+            // "preload = false" switched preloading on.
+            $this->preload = $this->toBoolean($this->getPresetFromSettings('preload', true));
         }
     }
 

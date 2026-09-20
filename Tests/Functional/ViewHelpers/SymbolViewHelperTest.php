@@ -295,6 +295,21 @@ class SymbolViewHelperTest extends FunctionalTestCase
                     '<script>alert(1)</script>',
                 ],
             ],
+            // Through real TypoScript, where the value arrives as the string "false".
+            // Before setPreload() ran the preset through toBoolean(), assigning it to
+            // the bool property made it true and switched preloading on.
+            'preset "false" disables preloading' => [
+                [
+                    'identifier' => 'house',
+                ],
+                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.preload=false',
+                [
+                    '<span class="icon-default icon-default-house icon-default-house-dims">',
+                ],
+                [
+                    '<link rel="preload"',
+                ],
+            ],
             'with universal tag attribute dir' => [
                 [
                     'identifier' => 'house',
