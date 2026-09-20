@@ -54,12 +54,26 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         ));
     }
 
-    private function renderHouseIcon(): string
+    private function renderPlaceholderIcon(): string
     {
         return (string)$this->executeFrontendSubRequest(
             (new InternalRequest('https://website.local/'))
-                ->withQueryParameters(['id' => 1, 'identifier' => 'house'])
+                ->withQueryParameters(['id' => 1, 'identifier' => 'placeholder'])
         )->getBody();
+    }
+
+    /**
+     * Asserts the shipped default preset arrived. The cache buster is the telling part:
+     * getCacheBuster() only emits one when the resolved file actually exists, so this
+     * also covers the preset pointing somewhere real.
+     */
+    private function assertShippedDefaultPresetWasUsed(string $body): void
+    {
+        self::assertMatchesRegularExpression(
+            '#<use xlink:href="[^"]*/default-symbol\.svg\?cb=[0-9a-f]{32}\#placeholder" />#',
+            $body
+        );
+        self::assertStringNotContainsString('xlink:href="/default#placeholder"', $body);
     }
 
     /**
@@ -78,16 +92,7 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
             ['include_static_file' => 'EXT:c1_svg_viewhelpers/Configuration/TypoScript/'],
         );
 
-        $body = $this->renderHouseIcon();
-
-        // Proves the "file" constant arrived: without it symbolsFile stays at the
-        // argument default and the href would be "/default#house".
-        self::assertStringContainsString(
-            'default-symbol.svg#house',
-            $body,
-            'The static template did not provide the default preset.'
-        );
-        self::assertStringNotContainsString('xlink:href="/default#house"', $body);
+        $this->assertShippedDefaultPresetWasUsed($this->renderPlaceholderIcon());
     }
 
     /**
@@ -112,13 +117,6 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         $this->getConnectionPool()->getConnectionForTable('sys_template')
             ->update('sys_template', ['clear' => 0], ['pid' => 1]);
 
-        $body = $this->renderHouseIcon();
-
-        self::assertStringContainsString(
-            'default-symbol.svg#house',
-            $body,
-            'The site set did not provide the default preset.'
-        );
-        self::assertStringNotContainsString('xlink:href="/default#house"', $body);
+        $this->assertShippedDefaultPresetWasUsed($this->renderPlaceholderIcon());
     }
 }

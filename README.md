@@ -61,10 +61,22 @@ will output something like:
 ```html
 <span class="icon-default icon-default-icon-id icon-default-icon-id-dims">
     <svg role="graphics-symbol">
-        <use xlink:href="/path/to/sprite-default.svg?cb=5db10127a446fff1f0d0240086487da1#icon-id"></use>
+        <use xlink:href="/path/to/sprite-default.svg?cb=5db10127a446fff1f0d0240086487da1#icon-id" />
     </svg>
 </span>
 ```
+
+Out of the box the `default` preset points at a symbol file shipped with the extension that
+contains a single symbol, `placeholder` — a dashed frame with a question mark. So
+
+```html
+<svgvh:symbol identifier='placeholder' />
+```
+
+renders a visible placeholder before you have generated your own symbol file. It exists so
+that a preset which has not been configured yet fails visibly instead of rendering nothing.
+Point the preset at your own file as described under Configuration; your own identifiers only
+work once you do.
 
 #### Arguments
 
