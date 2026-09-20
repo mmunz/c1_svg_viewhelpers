@@ -2,14 +2,27 @@ name: tests
 
 on: [push, pull_request]
 
+# All three jobs only read the checkout and run tests in Docker; none writes
+# back through the GitHub API.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-22.04
     name: Linting
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Add GITHUB_TOKEN if available
-        run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
       - name: Install testing system
         run: Build/Scripts/runTests.sh -p 8.4 -t 13 -s composerUpdate
       - name: TypoScript lint
@@ -29,14 +42,23 @@ jobs:
           - { php: "8.3" }
           - { php: "8.4" }
     name: phpstan on PHP${{ matrix.env.php }}
+    # Passed through the environment rather than interpolated into run:, so the
+    # shell treats the value as data. Deliberately not named PHP_VERSION, which
+    # runTests.sh assigns itself.
+    env:
+      MATRIX_PHP: ${{ matrix.env.php }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Add GITHUB_TOKEN if available
-        run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
       - name: Install testing system
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t 13 -s composerUpdate
+        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t 13 -s composerUpdate
       - name: phpstan
-        run: Build/Scripts/runTests.sh -n -p ${{ matrix.env.php }} -s phpstan
+        run: Build/Scripts/runTests.sh -n -p "$MATRIX_PHP" -s phpstan
 
   tests:
     runs-on: ubuntu-22.04
@@ -51,13 +73,20 @@ jobs:
           - { php: "8.3", TYPO3_VERSION: 13 }
           - { php: "8.4", TYPO3_VERSION: 13 }
     name: Tests on PHP${{ matrix.env.php }} / TYPO3 ${{ matrix.env.TYPO3_VERSION }}
+    env:
+      MATRIX_PHP: ${{ matrix.env.php }}
+      MATRIX_TYPO3: ${{ matrix.env.TYPO3_VERSION }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Add GITHUB_TOKEN if available
-        run: if [ -n "${{secrets.GITHUB_TOKEN}}" ]; then composer config github-oauth.github.com ${{secrets.GITHUB_TOKEN}}; fi;
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com "$GITHUB_TOKEN"; fi;
       - name: Install testing system
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -s composerUpdate
+        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -s composerUpdate
       - name: Unit Tests
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -s unit
+        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -s unit
       - name: Functional Tests with sqlite
-        run: Build/Scripts/runTests.sh -p ${{ matrix.env.php }} -t ${{ matrix.env.TYPO3_VERSION }} -d sqlite -s functional
+        run: Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t "$MATRIX_TYPO3" -d sqlite -s functional
