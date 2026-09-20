@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 - 2026-09-20
+
+Major because of the breaking changes below, several of which alter how an existing
+installation behaves without any configuration change on your side. Read that section
+before upgrading.
 
 ### Breaking
 
