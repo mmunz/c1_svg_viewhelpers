@@ -96,6 +96,12 @@ class SymbolViewHelperTest extends FunctionalTestCase
                 [],
                 '',
                 [
+                    // Fluid's TemplateParser rejects the missing required argument. The test
+                    // fixture catches it and renders it as "<message> (<code>)". Assert the
+                    // message too, not just the code: 1237823699 is raised for *any* missing
+                    // required argument, so on its own it would not prove that it was the
+                    // identifier that was rejected.
+                    'Required argument "identifier" was not supplied.',
                     '1237823699',
                 ],
             ],
