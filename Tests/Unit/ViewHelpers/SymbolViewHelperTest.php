@@ -120,10 +120,12 @@ final class SymbolViewHelperTest extends UnitTestCase
                 ['preload' => false],
                 false,
             ],
-            'preload defaults to true when neither is set' => [
+            // Preloading is opt-in: neither an argument nor a preset means off, which
+            // is what README and CHANGELOG have always documented.
+            'preload defaults to off when neither is set' => [
                 ['identifier' => 'house'],
                 [],
-                true,
+                false,
             ],
         ];
     }
@@ -206,6 +208,22 @@ final class SymbolViewHelperTest extends UnitTestCase
         self::assertSame(
             'icon-default icon-default-house icon-default-house-dims',
             $this->classAttributeOf($rendered)
+        );
+    }
+
+    // getPresetFromSettings() keys off the symbolFile argument, so passing a path
+    // rather than a preset key matches no preset and falls back. While that fallback
+    // was true, an explicit symbolFile silently preloaded.
+    #[Test]
+    public function anExplicitSymbolFilePathDoesNotPreloadByItself(): void
+    {
+        $pageRenderer = $this->createMock(PageRenderer::class);
+        $pageRenderer->expects($this->never())->method('addHeaderData');
+
+        $this->render(
+            ['identifier' => 'house', 'symbolFile' => 'fileadmin/explicit-sprite.svg'],
+            $this->settingsWithDefaultPreset(['preload' => '1']),
+            $pageRenderer
         );
     }
 

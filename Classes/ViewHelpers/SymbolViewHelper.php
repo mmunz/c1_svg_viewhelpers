@@ -13,7 +13,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
 {
     protected string $symbolsFile = '';
     protected string $baseClass = '';
-    protected bool $preload = true;
+    protected bool $preload = false;
     protected array $settings = [];
 
     /**
@@ -122,7 +122,7 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
             // Also through toBoolean(): TypoScript hands over strings, and assigning
             // one to the bool property directly made every non-empty value true, so
             // "preload = false" switched preloading on.
-            $this->preload = $this->toBoolean($this->getPresetFromSettings('preload', true));
+            $this->preload = $this->toBoolean($this->getPresetFromSettings('preload', false));
         }
     }
 
