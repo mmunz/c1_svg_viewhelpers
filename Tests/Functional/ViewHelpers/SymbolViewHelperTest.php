@@ -18,6 +18,11 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 class SymbolViewHelperTest extends FunctionalTestCase
 {
+    // The sprites live under the fixture extension's Resources/Public because that is
+    // the only layout PathUtility::getPublicResourceWebPath() supports without a
+    // deprecation -- and in Composer mode without an exception.
+    private const FIXTURE_SPRITE_DIR
+        = 'Tests/Fixtures/Extensions/c1_svg_viewhelpers_test/Resources/Public/Sprites/';
     protected array $testExtensionsToLoad = [
         '../../Tests/Fixtures/Extensions/c1_svg_viewhelpers_test',
         '../../../c1_svg_viewhelpers',
@@ -73,7 +78,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
         );
         $this->addTypoScriptToTemplateRecord(
             1,
-            'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file = EXT:c1_svg_viewhelpers/Tests/Fixtures/sprite-default.svg' . LF,
+            'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file = EXT:c1_svg_viewhelpers_test/Resources/Public/Sprites/sprite-default.svg' . LF,
         );
     }
 
@@ -81,16 +86,16 @@ class SymbolViewHelperTest extends FunctionalTestCase
     // expectation at once.
     private static function sprite(string $fixtureFile): string
     {
-        $hash = md5_file(__DIR__ . '/../../Fixtures/' . $fixtureFile);
+        $hash = md5_file(__DIR__ . '/../../../' . self::FIXTURE_SPRITE_DIR . $fixtureFile);
         if ($hash === false) {
-            throw new \RuntimeException('Missing test fixture Tests/Fixtures/' . $fixtureFile);
+            throw new \RuntimeException('Missing test fixture ' . self::FIXTURE_SPRITE_DIR . $fixtureFile);
         }
         return self::spriteWithoutCacheBuster($fixtureFile) . '?cb=' . $hash;
     }
 
     private static function spriteWithoutCacheBuster(string $fixtureFile): string
     {
-        return '/typo3conf/ext/c1_svg_viewhelpers/Tests/Fixtures/' . $fixtureFile;
+        return '/typo3conf/ext/c1_svg_viewhelpers_test/Resources/Public/Sprites/' . $fixtureFile;
     }
 
     public static function renderSymbolDataProvider(): array
@@ -131,7 +136,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
             'custom symbolFile' => [
                 [
                     'identifier' => 'house',
-                    'symbolFile' => 'EXT:c1_svg_viewhelpers/Tests/Fixtures/sprite-alternative.svg',
+                    'symbolFile' => 'EXT:c1_svg_viewhelpers_test/Resources/Public/Sprites/sprite-alternative.svg',
                 ],
                 '',
                 [
@@ -142,7 +147,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
                 [
                     'identifier' => 'house',
                 ],
-                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file=EXT:c1_svg_viewhelpers/Tests/Fixtures/sprite-alternative.svg',
+                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file=EXT:c1_svg_viewhelpers_test/Resources/Public/Sprites/sprite-alternative.svg',
                 [
                     '<span class="icon-default icon-default-house icon-default-house-dims"><svg role="graphics-symbol"><use xlink:href="' . $alternative . '#house" /></svg></span>',
                 ],
@@ -150,9 +155,9 @@ class SymbolViewHelperTest extends FunctionalTestCase
             'custom symbolFile where vieHelper argument overwrites preset from settings' => [
                 [
                     'identifier' => 'house',
-                    'symbolFile' => 'EXT:c1_svg_viewhelpers/Tests/Fixtures/sprite-alternative.svg',
+                    'symbolFile' => 'EXT:c1_svg_viewhelpers_test/Resources/Public/Sprites/sprite-alternative.svg',
                 ],
-                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file=EXT:c1_svg_viewhelpers/Tests/Fixtures/sprite-notexists.svg',
+                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file=EXT:c1_svg_viewhelpers_test/Resources/Public/Sprites/sprite-notexists.svg',
                 [
                     '<span class="icon-default icon-default-house icon-default-house-dims"><svg role="graphics-symbol"><use xlink:href="' . $alternative . '#house" /></svg></span>',
                 ],

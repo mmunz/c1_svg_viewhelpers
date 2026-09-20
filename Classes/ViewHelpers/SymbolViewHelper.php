@@ -173,10 +173,20 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         return GeneralUtility::getFileAbsFileName($this->symbolsFile);
     }
 
-    // Get the resolved path to the symbolFile
+    /*
+     * Get the resolved web path to the symbolFile.
+     *
+     * EXT: paths go through getPublicResourceWebPath(), which is the only one that maps
+     * an extension resource to its published _assets/ location. getAbsoluteWebPath()
+     * alone returns the absolute server path for anything it cannot place below the
+     * public directory, which in Composer mode is every extension in vendor/.
+     */
     private function getSymbolFilePath(): string
     {
-        return PathUtility::getAbsoluteWebPath($this->getAbsoluteFileName());
+        if (PathUtility::isExtensionPath($this->symbolsFile)) {
+            return PathUtility::getPublicResourceWebPath($this->symbolsFile);
+        }
+        return PathUtility::getAbsoluteWebPath($this->getAbsoluteFilename());
     }
 
     // Get public path of the symbolFile
