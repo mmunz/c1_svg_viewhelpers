@@ -275,6 +275,22 @@ class SymbolViewHelperTest extends FunctionalTestCase
                     '<link rel="preload" href="' . $default . '" as="image" fetchpriority="high" />',
                 ],
             ],
+            // The preload header goes through PageRenderer::addHeaderData(), which escapes
+            // nothing, and nothing constrains symbolFile to an actual path. Before the tag
+            // was built with a TagBuilder this put the payload into <head> verbatim.
+            'markup in the symbol file path is escaped in the preload header' => [
+                [
+                    'identifier' => 'house',
+                    'preload' => '1',
+                ],
+                'plugin.tx_c1svgviewhelpers.settings.svg.symbol.presets.default.file = fileadmin/x.svg" /><script>alert(1)</script><link a="',
+                [
+                    '<link rel="preload" href="fileadmin/x.svg&quot; /&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;link a=&quot;" as="image" fetchpriority="high" />',
+                ],
+                [
+                    '<script>alert(1)</script>',
+                ],
+            ],
             'with universal tag attribute dir' => [
                 [
                     'identifier' => 'house',

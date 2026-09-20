@@ -254,9 +254,17 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
         return $this->tag->render();
     }
 
+    // Built through the TagBuilder rather than concatenated: addHeaderData() does no
+    // escaping of its own, and nothing constrains the symbolFile argument to a path.
     private function addPreloadHeader(): void
     {
-        $this->pageRenderer->addHeaderData('<link rel="preload" href="' . $this->getSymbolFileURL() . '" as="image" fetchpriority="high" />');
+        $tagBuilder = $this->getTagBuilder();
+        $tagBuilder->setTagName('link');
+        $tagBuilder->addAttribute('rel', 'preload');
+        $tagBuilder->addAttribute('href', $this->getSymbolFileURL());
+        $tagBuilder->addAttribute('as', 'image');
+        $tagBuilder->addAttribute('fetchpriority', 'high');
+        $this->pageRenderer->addHeaderData($tagBuilder->render());
     }
 
     // Render the viewhelper output
