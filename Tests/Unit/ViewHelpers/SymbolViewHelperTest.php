@@ -48,7 +48,9 @@ final class SymbolViewHelperTest extends UnitTestCase
 
     private function classAttributeOf(string $renderedTag): string
     {
-        self::assertSame(1, preg_match('/<span[^>]*\sclass="([^"]*)"/', $renderedTag, $matches));
+        if (preg_match('/<span[^>]*\sclass="([^"]*)"/', $renderedTag, $matches) !== 1) {
+            self::fail('No span with a class attribute in: ' . $renderedTag);
+        }
         return $matches[1];
     }
 

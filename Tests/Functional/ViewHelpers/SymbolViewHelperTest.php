@@ -6,6 +6,7 @@ namespace C1\SvgViewHelpers\Tests\Functional\ViewHelpers;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -25,8 +26,6 @@ class SymbolViewHelperTest extends FunctionalTestCase
     protected array $defaultArguments = [
         'id' => 1,
     ];
-
-    protected $backupGlobals = true;
 
     protected array $configurationToUseInTestInstance = [
         'FE' => [
@@ -335,7 +334,7 @@ class SymbolViewHelperTest extends FunctionalTestCase
         }
     }
 
-    protected function fetchFrontendResponse(array $requestArguments): \TYPO3\CMS\Core\Http\Response
+    protected function fetchFrontendResponse(array $requestArguments): ResponseInterface
     {
         $response = $this->executeFrontendSubRequest(
             (new InternalRequest('https://website.local/'))->withQueryParameters($requestArguments)

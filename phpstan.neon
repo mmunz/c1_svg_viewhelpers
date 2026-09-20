@@ -1,14 +1,30 @@
+includes:
+  # saschaegerer/phpstan-typo3 declares this in composer.json "extra", which only
+  # phpstan/extension-installer acts on -- and that is not a dependency here. Without
+  # this line the package is installed but inert: no TYPO3 stubs, no rules, no service
+  # map. Including it explicitly also means a missing package fails loudly.
+  # extension.neon brings its own bootstrapFiles, so this project needs none.
+  - .Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+
 parameters:
   level: 8
-  reportUnmatchedIgnoredErrors: false
-  bootstrapFiles:
-    - %currentWorkingDirectory%/phpstan.bootstrap.php
+  reportUnmatchedIgnoredErrors: true
   paths:
-    # for now only checking theme
     - Classes/
+    - Tests/
     - ext_localconf.php
     - ext_emconf.php
+  excludePaths:
+    analyse:
+      # Copied from FluidTYPO3/Vhs and deliberately tolerant across TYPO3 versions:
+      # it probes for APIs with method_exists() and type-hints a v11-era ViewInterface
+      # that no longer exists. Analysing it only reports that tolerance as errors.
+      - Tests/Fixtures/Extensions/c1_svg_viewhelpers_test/Classes/ViewHelper/Render/AbstractRenderViewHelper.php
   ignoreErrors:
     - message: '#Variable \$_EXTKEY might not be defined#'
       path: '*/ext_emconf.php'
     - identifier: missingType.iterableValue
+    # Defined by the testing framework's bootstrap at runtime, so it is never visible
+    # to static analysis.
+    - message: '#Constant ORIGINAL_ROOT not found#'
+      path: 'Tests/*'
