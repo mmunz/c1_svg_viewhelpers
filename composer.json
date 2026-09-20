@@ -58,19 +58,29 @@
         }
     },
     "scripts": {
-        "ts:lint": "./Build/Scripts/runTests.sh -v -s typoScriptLint",
-		"php:lint": "./Build/Scripts/runTests.sh -n -s cgl",
-		"php:fix": "./Build/Scripts/runTests.sh -s cgl",
-        "phpstan": "./Build/Scripts/runTests.sh -s phpstan",
+        "testing:setup": "./Build/Scripts/runTests.sh -p 8.4 -t 13 -s composerUpdate",
+        "ts:lint": "./Build/Scripts/runTests.sh -v -p 8.4 -s typoScriptLint",
+        "php:lint": "./Build/Scripts/runTests.sh -n -p 8.4 -s cgl",
+        "php:fix": "./Build/Scripts/runTests.sh -p 8.4 -s cgl",
+        "php:syntax": "./Build/Scripts/runTests.sh -n -p 8.4 -s lint",
+        "phpstan": "./Build/Scripts/runTests.sh -p 8.4 -s phpstan",
         "tests:unit": "@php .Build/vendor/bin/phpunit -c Tests/UnitTests.xml",
         "tests:functional": "@php .Build/vendor/bin/phpunit -c Tests/FunctionalTests.xml",
         "tests": [
+            "@tests:unit",
             "@tests:functional"
         ],
         "ci:static": [
             "@phpstan",
             "@php:lint",
+            "@php:syntax",
             "@ts:lint"
         ]
+    },
+    "scripts-descriptions": {
+        "testing:setup": "Resolve dependencies for the combination the other scripts assume: PHP 8.4 and TYPO3 v13. Run this first, and again after switching versions.",
+        "tests:unit": "Unit tests, straight through phpunit so they stay fast and need no container.",
+        "tests:functional": "Functional tests. Runs standalone; the sqlite driver comes from Tests/FunctionalTests.xml.",
+        "ci:static": "Everything the CI lint job runs."
     }
 }

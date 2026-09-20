@@ -57,7 +57,7 @@ Options:
     -d <sqlite>
         Only with -s functional
         Specifies on which DBMS tests are performed
-            - sqlite: use sqlite
+            - sqlite (default): use sqlite
 
     -p <8.2|8.3|8.4>
         Specifies the PHP minor version to be used
@@ -123,7 +123,9 @@ cd ../testing-docker || exit 1
 # Option defaults
 ROOT_DIR=`readlink -f ${PWD}/../../`
 TEST_SUITE="unit"
-DBMS="mariadb"
+# sqlite is the only DBMS this repository implements; "runTests.sh -s functional"
+# failed outright with the previous "mariadb" default.
+DBMS="sqlite"
 PHP_VERSION="8.2"
 TYPO3_VERSION="12"
 PHP_XDEBUG_ON=0
