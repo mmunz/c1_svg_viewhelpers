@@ -208,20 +208,24 @@ if [ ${SCRIPT_VERBOSE} -eq 1 ]; then
 fi
 
 # Suite execution
+# Defaulted so the final "exit" is defined for arms that run no suite.
+SUITE_EXIT_CODE=0
 case ${TEST_SUITE} in
     clean)
         rm -rf ../../composer.lock ../../.Build/ ../../composer.json.testing
+        SUITE_EXIT_CODE=$?
         ;;
     composerUpdate)
         setUpDockerComposeDotEnv
         cp ../../composer.json ../../composer.json.orig
-        if [ -f "../../composer.json.testing" ]; then
-            cp ../../composer.json ../../composer.json.orig
-        fi
         docker compose run composer_update
+        # Capture before the bookkeeping below, otherwise this reports whether the
+        # "mv" worked rather than whether dependency resolution did.
+        SUITE_EXIT_CODE=$?
+        # composer_update rewrites composer.json in place; keep the rewritten file for
+        # inspection and put the committed one back.
         cp ../../composer.json ../../composer.json.testing
         mv ../../composer.json.orig ../../composer.json
-        SUITE_EXIT_CODE=$?
         docker compose down
         ;;
     cgl)
@@ -284,6 +288,7 @@ case ${TEST_SUITE} in
         docker images typo3/core-testing-*:latest --format "{{.Repository}}:latest" | xargs -I {} docker pull {}
         # remove "dangling" typo3/core-testing-* images (those tagged as <none>)
         docker images typo3/core-testing-* --filter "dangling=true" --format "{{.ID}}" | xargs -I {} docker rmi {}
+        SUITE_EXIT_CODE=$?
         ;;
     *)
         echo "Invalid -s option argument ${TEST_SUITE}" >&2
