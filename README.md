@@ -6,7 +6,7 @@ SVG related ViewHelpers for TYPO3 Fluid.
 
 TYPO3 v13.4 or v14.3. Tested against PHP 8.2, 8.3 and 8.4.
 
-Version 2.x supports TYPO3 v12 and v13.
+Version 1.x supports TYPO3 v11 and v12.
 
 ## Installation
 
