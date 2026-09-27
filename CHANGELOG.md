@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - unreleased
+## 2.0.0
 
 Major because of the breaking changes below, several of which alter how an existing
 installation behaves without any configuration change on your side. Read that section
