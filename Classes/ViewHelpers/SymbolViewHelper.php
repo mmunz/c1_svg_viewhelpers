@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace C1\SvgViewHelpers\ViewHelpers;
 
 use C1\SvgViewHelpers\Utilities\TypoScript;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\SystemResource\Publishing\SystemResourcePublisherInterface;
+use TYPO3\CMS\Core\SystemResource\Publishing\UriGenerationOptions;
+use TYPO3\CMS\Core\SystemResource\SystemResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
@@ -185,14 +189,36 @@ class SymbolViewHelper extends AbstractTagBasedViewHelper
     /*
      * getAbsoluteWebPath() returns the absolute server path for anything it cannot
      * place below the public directory -- in Composer mode every extension in vendor/.
-     * getPublicResourceWebPath() maps EXT: paths to their published _assets/ location.
+     * EXT: paths are therefore mapped to their published _assets/ location separately.
      */
     private function getSymbolFilePath(): string
     {
         if (PathUtility::isExtensionPath($this->symbolsFile)) {
-            return PathUtility::getPublicResourceWebPath($this->symbolsFile);
+            return $this->getExtensionResourceUri($this->symbolsFile);
         }
         return PathUtility::getAbsoluteWebPath($this->getAbsoluteFilename());
+    }
+
+    /*
+     * TYPO3 v14 deprecates getPublicResourceWebPath() in favour of the System Resource
+     * API, which v13 does not have. Cache busting stays off: getCacheBuster() adds its own.
+     * @todo: Drop the v13 branch when dropping support for v13
+     */
+    private function getExtensionResourceUri(string $resource): string
+    {
+        if (!class_exists(SystemResourceFactory::class)) {
+            return PathUtility::getPublicResourceWebPath($resource);
+        }
+        $renderingContext = $this->renderingContext;
+        $request = $renderingContext?->hasAttribute(ServerRequestInterface::class)
+            ? $renderingContext->getAttribute(ServerRequestInterface::class)
+            : null;
+        $publicResource = GeneralUtility::makeInstance(SystemResourceFactory::class)->createPublicResource($resource);
+        return (string)GeneralUtility::makeInstance(SystemResourcePublisherInterface::class)->generateUri(
+            $publicResource,
+            $request,
+            new UriGenerationOptions(cacheBusting: false),
+        );
     }
 
     // Get public path of the symbolFile

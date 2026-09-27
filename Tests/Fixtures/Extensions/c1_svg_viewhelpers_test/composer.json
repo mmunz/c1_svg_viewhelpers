@@ -5,12 +5,16 @@
     "license": "GPL-2.0-or-later",
     "extra": {
         "typo3/cms": {
-            "extension-key": "c1_svg_viewhelpers_test"
+            "extension-key": "c1_svg_viewhelpers_test",
+            "version": "1.0.0",
+            "Package": {
+                "providesPackages": {}
+            }
         }
     },
-	"autoload": {
-		"psr-4": {
-			"C1\\SvgViewhelpersTest\\": "Classes"
-		}
-	}
+    "autoload": {
+        "psr-4": {
+            "C1\\SvgViewhelpersTest\\": "Classes"
+        }
+    }
 }

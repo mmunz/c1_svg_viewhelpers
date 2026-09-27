@@ -55,8 +55,6 @@ class InlineViewHelper extends AbstractRenderViewHelper
         foreach ($namespaces as $namespace) {
             $content = str_replace($namespace, '', $content);
         }
-        $view = static::getPreparedClonedView($this->renderingContext);
-        $view->setTemplateSource($namespaceHeader . $content);
-        return static::renderView($view, $this->arguments);
+        return $this->renderSource($namespaceHeader . $content);
     }
 }

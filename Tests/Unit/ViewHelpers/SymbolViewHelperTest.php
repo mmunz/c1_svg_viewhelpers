@@ -34,7 +34,7 @@ final class SymbolViewHelperTest extends UnitTestCase
     private function render(array $arguments, array $settings, ?PageRenderer $pageRenderer = null): string
     {
         $viewHelper = new SymbolViewHelper();
-        $viewHelper->injectPageRenderer($pageRenderer ?? $this->createMock(PageRenderer::class));
+        $viewHelper->injectPageRenderer($pageRenderer ?? self::createStub(PageRenderer::class));
 
         $resolved = [];
         foreach ($viewHelper->prepareArguments() as $name => $definition) {

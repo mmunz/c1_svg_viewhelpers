@@ -15,7 +15,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 /**
  * SymbolViewHelperTest feeds the .typoscript files in by path, bypassing both
  * mechanisms below, so it stays green even when neither is wired up. That is how the
- * missing v12 static template went unnoticed.
+ * missing static template went unnoticed.
  */
 final class TypoScriptInclusionTest extends FunctionalTestCase
 {
@@ -68,8 +68,8 @@ final class TypoScriptInclusionTest extends FunctionalTestCase
         self::assertStringNotContainsString('xlink:href="/default#placeholder"', $body);
     }
 
-    // What a v12 integrator selects under "Include static (from extensions)". v12 has
-    // no site sets, so without it no preset is reachable there at all.
+    // What an integrator using TypoScript template records selects under "Include
+    // static (from extensions)"; without it no preset is reachable there at all.
     #[Test]
     public function presetsAreReachableThroughTheStaticTemplate(): void
     {

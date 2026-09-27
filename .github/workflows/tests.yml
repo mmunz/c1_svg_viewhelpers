@@ -61,7 +61,8 @@ jobs:
           if [ -n "$GITHUB_TOKEN" ]; then
             export COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"$GITHUB_TOKEN\"}}"
           fi
-          Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t 13 -s composerUpdate
+          # Newest supported core: the v14-only branches are unknown to phpstan on v13.
+          Build/Scripts/runTests.sh -p "$MATRIX_PHP" -t 14 -s composerUpdate
       - name: phpstan
         run: Build/Scripts/runTests.sh -n -p "$MATRIX_PHP" -s phpstan
 
@@ -71,12 +72,12 @@ jobs:
       fail-fast: false
       matrix:
         env:
-          - { php: "8.2", TYPO3_VERSION: 12 }
-          - { php: "8.3", TYPO3_VERSION: 12 }
-          - { php: "8.4", TYPO3_VERSION: 12 }
           - { php: "8.2", TYPO3_VERSION: 13 }
           - { php: "8.3", TYPO3_VERSION: 13 }
           - { php: "8.4", TYPO3_VERSION: 13 }
+          - { php: "8.2", TYPO3_VERSION: 14 }
+          - { php: "8.3", TYPO3_VERSION: 14 }
+          - { php: "8.4", TYPO3_VERSION: 14 }
     name: Tests on PHP${{ matrix.env.php }} / TYPO3 ${{ matrix.env.TYPO3_VERSION }}
     env:
       MATRIX_PHP: ${{ matrix.env.php }}

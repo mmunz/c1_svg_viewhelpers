@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <!--
     Adapted from TYPO3 testing-framework's Resources/Core/Build/FunctionalTests.xml.
-
-    failOnDeprecation is off: the fixture's AbstractRenderViewHelper still uses
-    StandaloneView and RenderingContext::get/setRequest, deprecated in TYPO3 v13.
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
@@ -17,6 +14,7 @@
          displayDetailsOnTestsThatTriggerErrors="true"
          displayDetailsOnTestsThatTriggerNotices="true"
          displayDetailsOnTestsThatTriggerWarnings="true"
+         failOnDeprecation="true"
          failOnNotice="true"
          failOnRisky="true"
          failOnWarning="true"

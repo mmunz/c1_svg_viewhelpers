@@ -9,7 +9,7 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => 'comuno.net',
     'state' => 'stable',
     'clearCacheOnLoad' => true,
-    'version' => '2.0.0',
+    'version' => '3.0.0',
     'autoload' => [
         'psr-4' => [
             'C1\\SvgViewHelpers\\' => 'Classes',
@@ -17,7 +17,7 @@ $EM_CONF[$_EXTKEY] = [
     ],
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-13.4.99',
+            'typo3' => '13.4.0-14.3.99',
         ],
         'conflicts' => [
         ],

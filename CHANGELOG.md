@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.0.0 - unreleased
+
+### Breaking
+
+- **TYPO3 v12 is no longer supported.** Supported are TYPO3 v13.4 and v14.3; stay on 2.x for
+  v12.
+
+### Added
+
+- TYPO3 v14 support. Symbol files given as `EXT:` path are resolved through the System
+  Resource API on v14, as `PathUtility::getPublicResourceWebPath()` is deprecated there.
+- Extension version, title and `providesPackages` in `composer.json`, as TYPO3 14.2
+  deprecates `ext_emconf.php` as the source of that metadata.
+
+### Changed
+
+- Tests run against TYPO3 v13 and v14 (testing-framework 9, PHPUnit 11/12); phpstan
+  analyses against v14. The functional tests now fail on deprecations as well.
+
 ## 2.0.0 - 2026-09-20
 
 Major because of the breaking changes below, several of which alter how an existing
