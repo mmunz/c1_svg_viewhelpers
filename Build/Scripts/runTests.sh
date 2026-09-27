@@ -65,11 +65,11 @@ Options:
             - 8.3: use PHP 8.3
             - 8.4: use PHP 8.4
 
-    -t <12|13>
+    -t <13|14>
         Only with -s composerUpdate
         Specifies the TYPO3 core major version to be used
-            - 12 (default): use TYPO3 core v12
-            - 13: Use TYPO3 core v13
+            - 13 (default): use TYPO3 core v13
+            - 14: Use TYPO3 core v14
 
     -e "<phpunit options>"
         Only with -s functional|unit
@@ -127,7 +127,7 @@ TEST_SUITE="unit"
 # failed outright with the previous "mariadb" default.
 DBMS="sqlite"
 PHP_VERSION="8.2"
-TYPO3_VERSION="12"
+TYPO3_VERSION="13"
 PHP_XDEBUG_ON=0
 PHP_XDEBUG_PORT=9003
 EXTRA_TEST_OPTIONS=""

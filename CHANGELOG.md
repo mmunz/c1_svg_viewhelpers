@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - 2026-09-20
+## 2.0.0
 
 Major because of the breaking changes below, several of which alter how an existing
 installation behaves without any configuration change on your side. Read that section
@@ -8,6 +8,8 @@ before upgrading.
 
 ### Breaking
 
+- **TYPO3 v12 is no longer supported.** Supported are TYPO3 v13.4 and v14.3; stay on 1.x
+  for v12.
 - **Move settings from `plugin.tx_c1svgviewhelpers.svg` to
   `plugin.tx_c1svgviewhelpers.settings.svg`.** Please adapt your TypoScript config.
 - **Preloading is off unless something asks for it.** The fallback used to be on, which
@@ -25,7 +27,8 @@ before upgrading.
 
 ### Added
 
-- Site set `c1/svg-viewhelpers-default` for TYPO3 v13.1 and newer.
+- TYPO3 v14 support.
+- Site set `c1/svg-viewhelpers-default`.
 - A placeholder symbol file, shipped as the target of the `default` preset. The preset
   had always pointed at a file that did not exist in the package, so a fresh install
   rendered a silent 404. It contains one symbol, `placeholder`.
@@ -36,12 +39,13 @@ before upgrading.
 
 ### Fixed
 
-- **TypoScript is reachable on TYPO3 v12 again.** The static template had been replaced
-  by a site set, which needs v13.1, leaving v12 with no way to load the presets at all
-  even though the extension declares support for it.
-- **Symbol file URLs are correct in Composer mode.** `EXT:` paths now resolve through
-  `PathUtility::getPublicResourceWebPath()`; previously an absolute server path could
-  end up in the markup. Note this requires the symbol file to live under an extension's
+- **The static template is registered again.** It had been replaced by the site set,
+  leaving sites that include TypoScript via template records with no way to load the
+  presets.
+- **Symbol file URLs are correct in Composer mode.** `EXT:` paths now resolve to their
+  published `_assets/` location (System Resource API on TYPO3 v14,
+  `PathUtility::getPublicResourceWebPath()` on v13); previously an absolute server path
+  could end up in the markup. Note this requires the symbol file to live under an extension's
   `Resources/Public`.
 - **The preload header is escaped.** It was assembled by string concatenation and
   handed to `PageRenderer::addHeaderData()`, which escapes nothing, so a file name
@@ -62,7 +66,8 @@ before upgrading.
 
 - Unit test suite restored — it referenced a testing framework that is not a dependency
   and a directory that did not exist, and never ran. Both suites now run in CI against
-  TYPO3 12 and 13 on PHP 8.2, 8.3 and 8.4.
+  TYPO3 13 and 14 on PHP 8.2, 8.3 and 8.4 (testing-framework 9, PHPUnit 11/12), and the
+  functional tests fail on deprecations. phpstan analyses against TYPO3 v14.
 - `saschaegerer/phpstan-typo3` is actually loaded now; it was installed but inert, so
   no TYPO3 rules or stubs were ever applied.
 - `composerUpdate` reports its own exit code, so a failing dependency resolution can no
@@ -73,6 +78,8 @@ before upgrading.
   `sbuerk/typo3-cmscomposerinstallers-testingframework-bridge` (replaced by
   `typo3/testing-framework` since 8.0.0).
 - `declare(strict_types=1)` in the production classes.
+- Extension version, title and `providesPackages` in `composer.json`, as TYPO3 14.2
+  deprecates `ext_emconf.php` as the source of that metadata.
 
 ## 1.1.0
 

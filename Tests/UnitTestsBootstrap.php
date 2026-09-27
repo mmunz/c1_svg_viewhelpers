@@ -50,14 +50,7 @@
     // This should be always true except for TYPO3 mono repository.
     $composerMode = defined('TYPO3_COMPOSER_MODE') && TYPO3_COMPOSER_MODE === true;
 
-    // @todo: Remove else branch when dropping support for v12
-    $hasConsolidatedHttpEntryPoint = class_exists(CoreHttpApplication::class);
-    if ($hasConsolidatedHttpEntryPoint) {
-        \TYPO3\TestingFramework\Core\SystemEnvironmentBuilder::run(0, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI, $composerMode);
-    } else {
-        $requestType = \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_BE | \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI;
-        \TYPO3\TestingFramework\Core\SystemEnvironmentBuilder::run(0, $requestType, $composerMode);
-    }
+    \TYPO3\TestingFramework\Core\SystemEnvironmentBuilder::run(0, \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::REQUESTTYPE_CLI, $composerMode);
 
     $testbase->createDirectory(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/typo3conf/ext');
     $testbase->createDirectory(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/typo3temp/assets');
@@ -74,6 +67,8 @@
 
     $cache = new \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend(
         'core',
+        // v13 requires the context argument, v14 has no constructor and ignores it
+        // @phpstan-ignore new.noConstructor
         new \TYPO3\CMS\Core\Cache\Backend\NullBackend('production', [])
     );
     $packageManager = \TYPO3\CMS\Core\Core\Bootstrap::createPackageManager(

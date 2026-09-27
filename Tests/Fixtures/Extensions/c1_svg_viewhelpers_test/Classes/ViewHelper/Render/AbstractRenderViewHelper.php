@@ -9,12 +9,7 @@ namespace C1\SvgViewhelpersTest\ViewHelper\Render;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\View\ViewInterface;
 
 /**
  * ### Base class for all rendering ViewHelpers.
@@ -25,19 +20,9 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
 abstract class AbstractRenderViewHelper extends AbstractViewHelper
 {
     /**
-     * @var ConfigurationManagerInterface
-     */
-    protected $configurationManager;
-
-    /**
      * @var bool
      */
     protected $escapeOutput = false;
-
-    public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager): void
-    {
-        $this->configurationManager = $configurationManager;
-    }
 
     public function initializeArguments(): void
     {
@@ -66,48 +51,20 @@ abstract class AbstractRenderViewHelper extends AbstractViewHelper
         return $namespaces;
     }
 
-    protected static function getPreparedClonedView(RenderingContextInterface $renderingContext): StandaloneView
-    {
-        $view = static::getPreparedView();
-        $newRenderingContext = $view->getRenderingContext();
-        if (method_exists($renderingContext, 'getControllerContext')) {
-            $controllerContext = clone $renderingContext->getControllerContext();
-
-            $view->setFormat($controllerContext->getRequest()->getFormat());
-            $newRenderingContext->setViewHelperVariableContainer(
-                $renderingContext->getViewHelperVariableContainer()
-            );
-            if (method_exists($newRenderingContext, 'setControllerContext')) {
-                $newRenderingContext->setControllerContext($controllerContext);
-            }
-        } elseif (method_exists($renderingContext, 'getRequest') && method_exists($newRenderingContext, 'setRequest')) {
-            $newRenderingContext->setRequest($renderingContext->getRequest());
-        }
-        $variables = (array)$renderingContext->getVariableProvider()->getAll();
-        $view->assignMultiple($variables);
-        return $view;
-    }
-
-    /**
-     * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface|ViewInterface $view
-     */
-    protected static function renderView($view, array $arguments): string
+    // Parses and renders the template source in the current rendering context, so the
+    // variables and the request of the surrounding template stay available. Uses Fluid's
+    // own parser instead of StandaloneView, which TYPO3 v14 removed.
+    protected function renderSource(string $templateSource): string
     {
         try {
-            $content = $view->render();
+            return (string)$this->renderingContext->getTemplateParser()
+                ->parse($templateSource)
+                ->render($this->renderingContext);
         } catch (\Exception $error) {
-            if (!$arguments['graceful']) {
+            if (!$this->arguments['graceful']) {
                 throw $error;
             }
-            $content = $error->getMessage() . ' (' . $error->getCode() . ')';
+            return $error->getMessage() . ' (' . $error->getCode() . ')';
         }
-        return $content;
-    }
-
-    protected static function getPreparedView(): StandaloneView
-    {
-        /** @var StandaloneView $view */
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        return $view;
     }
 }

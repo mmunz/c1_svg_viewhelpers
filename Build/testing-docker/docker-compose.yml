@@ -17,16 +17,6 @@ services:
           set -x
         fi
         php -v | grep '^PHP';
-        if [ ${TYPO3_VERSION} -eq 12 ]; then
-            composer req --dev --no-update \\
-               "typo3/cms-composer-installers:^5.0" \\
-                typo3/cms-backend:^12 \\
-                typo3/cms-frontend:^12 \\
-                typo3/cms-extbase:^12 \\
-                typo3/cms-fluid:^12 \\
-                typo3/cms-install:^12
-            composer req typo3/cms-core:^12 -W --no-update
-        fi
         if [ ${TYPO3_VERSION} -eq 13 ]; then
             composer req --dev --no-update \\
                "typo3/cms-composer-installers:^5.0" \\
@@ -36,6 +26,16 @@ services:
                 typo3/cms-fluid:^13 \\
                 typo3/cms-install:^13
             composer req typo3/cms-core:^13 -W --no-update
+        fi
+        if [ ${TYPO3_VERSION} -eq 14 ]; then
+            composer req --dev --no-update \\
+               "typo3/cms-composer-installers:^5.0" \\
+                typo3/cms-backend:^14 \\
+                typo3/cms-frontend:^14 \\
+                typo3/cms-extbase:^14 \\
+                typo3/cms-fluid:^14 \\
+                typo3/cms-install:^14
+            composer req typo3/cms-core:^14 -W --no-update
         fi
         composer update --no-progress --no-interaction --no-blocking;
       "
@@ -63,7 +63,7 @@ services:
               -v \\
               ${CGLCHECK_DRY_RUN} \\
               --config=.php-cs-fixer.dist.php  \\
-              --using-cache=no .
+              --using-cache=no --path-mode=intersection .
         else
           XDEBUG_MODE=\"debug,develop\" \\
           XDEBUG_TRIGGER=\"foo\" \\
@@ -73,7 +73,7 @@ services:
             -v \\
             ${CGLCHECK_DRY_RUN} \\
             --config=.php-cs-fixer.dist.php  \\
-            --using-cache=no .
+            --using-cache=no --path-mode=intersection .
         fi
       "
 

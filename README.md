@@ -4,9 +4,9 @@ SVG related ViewHelpers for TYPO3 Fluid.
 
 ## Requirements
 
-TYPO3 v12 or v13. Tested against PHP 8.2, 8.3 and 8.4.
+TYPO3 v13.4 or v14.3. Tested against PHP 8.2, 8.3 and 8.4.
 
-Note the site set used below needs TYPO3 v13.1; on v12 and v13.0 use the static template.
+Version 1.x supports TYPO3 v11 and v12.
 
 ## Installation
 
@@ -19,11 +19,11 @@ composer req c1/c1-svg-viewhelpers
 ## Configuration
 
 1. Load the extension's TypoScript:
-   - **TYPO3 v13.1 and newer:** add the site set `c1/svg-viewhelpers-default` to your site,
+   - **Site sets (recommended):** add the site set `c1/svg-viewhelpers-default` to your site,
      either in *Site Management > Sites* or as a `dependencies` entry in the site's
      `config.yaml`.
-   - **TYPO3 v12:** select *SVG Viewhelpers: Default* under *Include static (from extensions)*
-     in your root TypoScript template record.
+   - **TypoScript template records:** select *SVG Viewhelpers: Default* under
+     *Include static (from extensions)* in your root TypoScript template record.
 2. Create a symbols file and CSS (or SCSS or LESS) classes, see below
 3. Include the generated S(CSS) or LESS files
 4. Configure the presets in the TypoScript constants and or setup, i.e. set
